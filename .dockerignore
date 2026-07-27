@@ -1,0 +1,12 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/tmp
+tests
+*.user
+*.suo
+*.pdb
+*.log
+OPEN_PORTFOLIO.cmd

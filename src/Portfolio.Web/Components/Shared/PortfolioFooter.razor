@@ -1,0 +1,34 @@
+<footer class="site-footer">
+    <div class="page-shell site-footer__main">
+        <div>
+            <span class="footer-mark">A</span>
+            <p>@T("Secure backend systems and practical AI products, designed and shipped end to end.", "أنظمة خلفية آمنة ومنتجات ذكاء اصطناعي عملية، من الفكرة والتصميم حتى الاختبار والنشر.")</p>
+        </div>
+        <nav aria-label="@T("Footer navigation", "روابط التذييل")">
+            <a href="@HomeLink("#system")">@T("Core innovation", "الابتكار الأساسي")</a>
+            <a href="@HomeLink("#work")">@T("Live products", "المشاريع الحية")</a>
+            <a href="@HomeLink("#about")">@T("Profile", "الملف المهني")</a>
+            <a href="https://github.com/aboodtalat123" target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a href="https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+            <a href="mailto:aboodtalat123@gmail.com">@T("Email", "البريد") ↗</a>
+        </nav>
+    </div>
+    <div class="footer-statusbar">
+        <div class="page-shell">
+            <span><i></i> @T("Available for selected projects", "متاح لمشاريع مختارة")</span>
+            <span>© @DateTime.UtcNow.Year @T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن طلعت أبو سالم")</span>
+            <span>ASP.NET Core · SSR</span>
+        </div>
+    </div>
+</footer>
+
+@code {
+    [Parameter]
+    public string Culture { get; set; } = "en";
+
+    private bool IsArabic => string.Equals(Culture, "ar", StringComparison.OrdinalIgnoreCase);
+
+    private string T(string english, string arabic) => IsArabic ? arabic : english;
+
+    private string HomeLink(string fragment) => IsArabic ? $"/?lang=ar{fragment}" : $"/{fragment}";
+}

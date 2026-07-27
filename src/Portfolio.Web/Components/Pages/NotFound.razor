@@ -1,0 +1,26 @@
+@page "/not-found"
+@layout MainLayout
+
+<PageTitle>@T("Page not found | ABD ALRAHMAN TALAT ABUSALEM", "الصفحة غير موجودة | عبد الرحمن أبو سالم")</PageTitle>
+
+<div class="site-shell">
+    <PortfolioHeader Culture="@Culture" />
+    <main class="page-shell">
+        <section class="not-found-panel">
+            <span>404 / @T("ROUTE NOT FOUND", "المسار غير موجود")</span>
+            <h1>@T("The page you requested is not part of this build.", "الصفحة التي طلبتها غير موجودة في الموقع.")</h1>
+            <a class="button button-primary" href="@HomeUrl">@T("Return home", "العودة للرئيسية")</a>
+        </section>
+    </main>
+    <PortfolioFooter Culture="@Culture" />
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "lang")]
+    public string? Language { get; set; }
+
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private bool IsArabic => Culture == "ar";
+    private string HomeUrl => IsArabic ? "/?lang=ar" : "/";
+    private string T(string english, string arabic) => IsArabic ? arabic : english;
+}

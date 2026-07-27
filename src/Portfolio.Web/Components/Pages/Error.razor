@@ -1,0 +1,39 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>@T("Something went wrong | ABD ALRAHMAN TALAT ABUSALEM", "حدث خطأ | عبد الرحمن أبو سالم")</PageTitle>
+
+<div class="site-shell">
+    <PortfolioHeader Culture="@Culture" />
+    <main class="page-shell">
+        <section class="not-found-panel">
+            <span>500 / @T("UNEXPECTED ERROR", "خطأ غير متوقع")</span>
+            <h1>@T("The request could not be completed.", "تعذر إكمال الطلب.")</h1>
+            <p>@T("Please return to the portfolio and try again.", "يرجى العودة إلى معرض الأعمال والمحاولة مرة أخرى.")</p>
+            @if (ShowRequestId)
+            {
+                <code>@T("Request ID", "معرف الطلب"): @RequestId</code>
+            }
+            <a class="button button-primary" href="@HomeUrl">@T("Return home", "العودة للرئيسية")</a>
+        </section>
+    </main>
+    <PortfolioFooter Culture="@Culture" />
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "lang")]
+    public string? Language { get; set; }
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private bool IsArabic => Culture == "ar";
+    private string HomeUrl => IsArabic ? "/?lang=ar" : "/";
+    private string T(string english, string arabic) => IsArabic ? arabic : english;
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: abdalrahman-portfolio
+    runtime: docker
+    plan: free
+    repo: https://github.com/aboodtalat123/portfolio
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production

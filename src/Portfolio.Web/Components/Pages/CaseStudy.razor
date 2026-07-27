@@ -1,0 +1,413 @@
+@page "/work/{Slug}"
+@inject IProjectRepository ProjectRepository
+
+<PageTitle>@(project is null ? T("Project not found", "المشروع غير موجود") : $"{project.Title} | {T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن أبو سالم")}")</PageTitle>
+<HeadContent>
+    <meta name="description" content="@(project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
+    <meta property="og:title" content="@(project is null ? T("Project case study", "دراسة حالة مشروع") : $"{project.Title} | {T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن أبو سالم")}")" />
+    <meta property="og:description" content="@(project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
+</HeadContent>
+
+<div class="site-shell">
+    <PortfolioHeader Culture="@Culture" />
+
+    @if (project is null)
+    {
+        <main class="case-main page-shell">
+            <section class="not-found-panel">
+                <span>404 / @T("PROJECT NOT FOUND", "المشروع غير موجود")</span>
+                <h1>@T("This case study does not exist.", "دراسة الحالة هذه غير موجودة.")</h1>
+                <a class="button button-primary" href="@HomeWorkUrl">@T("Return to selected work", "العودة إلى الأعمال المختارة")</a>
+            </section>
+        </main>
+    }
+    else
+    {
+        var thumbnail = project.Media.FirstOrDefault(item => item.IsThumbnail) ?? project.Media.FirstOrDefault();
+        var architecture = GetArchitecture(project.Slug);
+        var principles = GetPrinciples(project.Slug);
+        var evidence = GetEvidence(project.Slug);
+        var links = GetLinks(project);
+        var sectionOffset = evidence.Count > 0 ? 1 : 0;
+
+        <main class="case-main">
+            <section class="case-hero page-shell">
+                <a class="breadcrumb" href="@HomeWorkUrl"><span>@(IsArabic ? "→" : "←")</span> @T("SELECTED WORK", "الأعمال المختارة")</a>
+                <div class="case-hero__grid">
+                    <div class="case-hero__copy">
+                        <div class="project-meta"><span>@project.Category</span><span>@project.CompletedYear</span><span>@T("CASE STUDY", "دراسة حالة")</span></div>
+                        <h1>@project.Title</h1>
+                        <p>@project.Summary</p>
+                        <div class="project-actions">
+                            @foreach (var link in links)
+                            {
+                                <a class="@(link.Primary ? "button button-primary" : "button button-secondary")" href="@link.Url" target="@(link.External ? "_blank" : null)" rel="@(link.External ? "noreferrer" : null)">@link.Label <span aria-hidden="true">@(link.External ? "↗" : "→")</span></a>
+                            }
+                        </div>
+                    </div>
+                    <aside class="case-facts" aria-label="@T("Project facts", "حقائق المشروع")">
+                        @foreach (var fact in GetFacts(project.Slug))
+                        {
+                            <div><span>@fact.Label</span><strong>@fact.Value</strong></div>
+                        }
+                    </aside>
+                </div>
+            </section>
+
+            <section class="case-visual page-shell" aria-label="@T("Project preview", "معاينة المشروع")">
+                <ProjectVisual Slug="@project.Slug" ImagePath="@thumbnail?.Path" AltText="@thumbnail?.AltText" Culture="@Culture" />
+            </section>
+
+            @if (evidence.Count > 0)
+            {
+                <section class="case-evidence page-shell" aria-labelledby="evidence-title">
+                    <header class="case-section-heading"><span>01</span><div><p>@T("WORKING PRODUCT EVIDENCE", "دليل منتج يعمل فعليًا")</p><h2 id="evidence-title">@T("Real interfaces, not mockups.", "واجهات حقيقية وليست نماذج وهمية.")</h2></div></header>
+                    <div class="case-evidence-grid @(evidence.Count > 2 ? "case-evidence-grid-wide" : string.Empty)">
+                        @foreach (var item in evidence)
+                        {
+                            <figure class="evidence-shot">
+                                <div class="real-screen"><img src="@item.Path" alt="@item.AltText" loading="lazy" /></div>
+                                <figcaption><span>@item.Label</span><p>@item.Caption</p></figcaption>
+                            </figure>
+                        }
+                    </div>
+                </section>
+            }
+
+            <section class="case-story page-shell" aria-labelledby="story-title">
+                <header class="case-section-heading"><span>@((1 + sectionOffset).ToString("00"))</span><div><p>@T("CONTEXT & DELIVERY", "السياق والتنفيذ")</p><h2 id="story-title">@T("The engineering story.", "القصة الهندسية.")</h2></div></header>
+                <div class="story-grid">
+                    <article><span>@T("THE CHALLENGE", "التحدي")</span><p>@project.Challenge</p></article>
+                    <article><span>@T("THE SOLUTION", "الحل")</span><p>@project.Solution</p></article>
+                    <article><span>@T("MY ROLE", "دوري")</span><p>@project.Role</p></article>
+                    <article><span>@T("THE RESULT", "النتيجة")</span><p>@project.Outcome</p></article>
+                </div>
+            </section>
+
+            <section class="case-architecture section-block" aria-labelledby="architecture-title">
+                <div class="page-shell">
+                    <header class="case-section-heading"><span>@((2 + sectionOffset).ToString("00"))</span><div><p>@T("SYSTEM DESIGN", "تصميم النظام")</p><h2 id="architecture-title">@T("How the product works.", "كيف يعمل المنتج.")</h2></div></header>
+                    <div class="case-pipeline">
+                        @{ var index = 0; }
+                        @foreach (var item in architecture)
+                        {
+                            index++;
+                            <article><span>@index.ToString("00")</span><div><strong>@item.Title</strong><p>@item.Description</p></div><code>@item.Tag</code></article>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <section class="case-principles page-shell" aria-labelledby="principles-title">
+                <header class="case-section-heading"><span>@((3 + sectionOffset).ToString("00"))</span><div><p>@T("ENGINEERING DECISIONS", "القرارات الهندسية")</p><h2 id="principles-title">@T("What keeps it trustworthy.", "ما الذي يجعله موثوقًا.")</h2></div></header>
+                <div class="principle-grid">
+                    @foreach (var item in principles)
+                    {
+                        <article><span>@item.Label</span><h3>@item.Title</h3><p>@item.Description</p></article>
+                    }
+                </div>
+            </section>
+
+            <section class="case-stack page-shell" aria-labelledby="stack-title">
+                <div><p class="section-index">@((4 + sectionOffset).ToString("00")) / @T("TECHNOLOGY", "التقنيات")</p><h2 id="stack-title">@T("Tools chosen for the job.", "تقنيات اختيرت لخدمة المنتج.")</h2></div>
+                <div class="tech-cloud">
+                    @foreach (var technology in project.Technologies)
+                    {
+                        <span>@technology</span>
+                    }
+                </div>
+            </section>
+
+            <section class="next-project page-shell">
+                <span>@T("NEXT CASE STUDY", "دراسة الحالة التالية")</span>
+                <a href="@LocalUrl($"/work/{GetNextSlug(project.Slug)}")">@GetNextTitle(project.Slug) <b>@InlineArrow</b></a>
+            </section>
+        </main>
+    }
+
+    <PortfolioFooter Culture="@Culture" />
+</div>
+
+@code {
+    [Parameter]
+    public string Slug { get; set; } = string.Empty;
+
+    [SupplyParameterFromQuery(Name = "lang")]
+    public string? Language { get; set; }
+
+    private ProjectDetail? project;
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private bool IsArabic => Culture == "ar";
+    private string InlineArrow => IsArabic ? "←" : "→";
+    private string HomeWorkUrl => IsArabic ? "/?lang=ar#work" : "/#work";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        project = await ProjectRepository.GetBySlugAsync(Slug, Culture);
+    }
+
+    private sealed record Fact(string Label, string Value);
+    private sealed record ArchitectureItem(string Title, string Description, string Tag);
+    private sealed record Principle(string Label, string Title, string Description);
+    private sealed record EvidenceMedia(string Path, string Label, string Caption, string AltText);
+    private sealed record ProjectLink(string Label, string Url, bool External, bool Primary = false);
+
+    private IReadOnlyList<Fact> GetFacts(string slug)
+    {
+        if (IsArabic)
+        {
+            return slug switch
+            {
+                "fairaid-gaza" => [new("المنصة", "عربية أولًا"), new("المسارات", "3 رحلات حسب الدور"), new("التسليم", "منتج ويب حي")],
+                "reusable-site-ai" => [new("المحولات", "موقعان يعملان"), new("الوصول للبيانات", "دون قاعدة البيانات"), new("الأدلة", "مصادر صفحات دقيقة")],
+                "dr-solution" => [new("الحالة", "منشور على Render"), new("الإصدار", "3.0.0"), new("الاختبارات", "8 ناجحة")],
+                _ => [new("المدخلات", "فيديوهات وقوائم"), new("المخرجات", "تقارير منظمة"), new("النمط", "محلي أولًا")]
+            };
+        }
+
+        return slug switch
+        {
+            "fairaid-gaza" => [new("PLATFORM", "Arabic-first"), new("WORKFLOWS", "3 role journeys"), new("DELIVERY", "Live web product")],
+            "reusable-site-ai" => [new("ADAPTERS", "2 working sites"), new("DATA ACCESS", "No direct database"), new("EVIDENCE", "Exact page sources")],
+            "dr-solution" => [new("STATUS", "Live on Render"), new("VERSION", "3.0.0"), new("TESTS", "8 passing")],
+            _ => [new("INPUT", "Videos + playlists"), new("OUTPUT", "Structured reports"), new("MODE", "Local-first")]
+        };
+    }
+
+    private IReadOnlyList<ArchitectureItem> GetArchitecture(string slug)
+    {
+        if (IsArabic)
+        {
+            return slug switch
+            {
+                "fairaid-gaza" =>
+                [
+                    new("دخول حسب الدور", "يدخل المواطن والمؤسسة والمسؤول عبر رحلات موثقة ومنفصلة.", "AUTH"),
+                    new("عمليات متحقق منها", "تحمي قواعد التحقق وفحوصات طبقة الخدمات التسجيل وخطط التوزيع.", "RULES"),
+                    new("فحص التعارض والسعة", "تُقارن الخطط ضمن نافذة 48 ساعة للمنطقة، وتحترم طلبات المواطنين السعة المتاحة.", "CHECK"),
+                    new("تسليم قابل للتتبع", "تحفظ حالات الحضور والتسليم وسجل التدقيق والتحليلات أثرًا تشغيليًا واضحًا.", "DATA"),
+                    new("مساعدة موثقة", "تجيب خدمة معرفة منفصلة من السياق العام والظاهر حسب الدور دون امتلاك قاعدة بيانات المنصة.", "AI")
+                ],
+                "reusable-site-ai" =>
+                [
+                    new("اكتشاف معرفة الموقع المتاحة", "يرسم محول الموقع المسارات والعناوين والروابط والحقول والجداول والعناصر والمحتوى المسموح دون دخول الخادم الخاص.", "MAP"),
+                    new("قراءة الصفحة الحالية", "وقت السؤال تلتقط الإضافة ما يراه المستخدم المسجل الآن، فتفهم الإجابة المهمة الحية أمامه.", "DOM"),
+                    new("التنقية والعزل", "تُحذف قيم الجلسات وحقول الروابط الحساسة، وتبقى بيانات SQLite ومتجهات Chroma داخل مساحة منفصلة لكل موقع ومستخدم.", "SAFE"),
+                    new("الاسترجاع الحي أولًا", "يتقدم سياق الصفحة الحالية على النسخ المخزنة، ثم يضيف البحث الهجين أدلة من معرفة الموقع الأوسع.", "RAG"),
+                    new("الإجابة والانتقال", "تتضمن الإجابة عنوان مصدر واضحًا وتفتح الصفحة الرسمية الدقيقة قبل استخدام المطابقة الاحتياطية للمسار.", "SOURCE")
+                ],
+                "dr-solution" =>
+                [
+                    new("استقبال المستند", "تتحقق الواجهة البرمجية من ملفات PDF والصور والحجم وعدد الصفحات ونمط الدراسة المختار.", "UPLOAD"),
+                    new("استخراج الصفحة بصريًا", "يرسم PyMuPDF كل صفحة ويحفظ سياقها البصري بجانب النص المستخرج.", "PDF"),
+                    new("تحليل متعدد الوسائط", "يحلل Gemini دفعات الصفحات للترجمة والشرح والصور والنقاط المهمة والخلاصات.", "AI"),
+                    new("واجهة دراسة تفاعلية", "يعرض المتصفح سلايدات بصرية وسياق الفصول وأسئلة قابلة للضبط ومحادثة سياقية.", "UI"),
+                    new("مخرجات قابلة للنقل", "ينشئ المصدر ملف HTML تفاعليًا واحدًا يعمل دون خادم التطبيق.", "EXPORT")
+                ],
+                _ =>
+                [
+                    new("استقبال الوسائط", "يقبل المسار المحلي فيديوهات وقوائم YouTube المدعومة للمعالجة.", "INPUT"),
+                    new("أخذ عينات الإطارات", "يستخرج FFmpeg إطارات ممثلة من الخط الزمني.", "FRAMES"),
+                    new("النص والرؤية", "يقرأ OCR أو التحليل البصري أهداف التعلم العربية والإنجليزية من الشرائح المفيدة.", "OCR"),
+                    new("إزالة التكرار", "تُخفض الإطارات والأهداف المتكررة قبل التصدير.", "CLEAN"),
+                    new("تقرير منظم", "تُنظم النتيجة النهائية للمراجعة بدل بقائها مدفونة في خط الفيديو الزمني.", "REPORT")
+                ]
+            };
+        }
+
+        return slug switch
+        {
+            "fairaid-gaza" =>
+            [
+                new("Role-aware entry", "Citizens, organizations, and administrators enter separate authenticated journeys.", "AUTH"),
+                new("Validated operations", "Fluent validation and service-layer checks protect registrations and distribution plans.", "RULES"),
+                new("Conflict and capacity checks", "Plans are compared inside a 48-hour sector window; citizen requests respect available capacity.", "CHECK"),
+                new("Tracked delivery", "Attendance, delivery state, audit events, and analytics preserve an operational trail.", "DATA"),
+                new("Grounded assistance", "A separate knowledge service answers from public and role-visible context without owning the platform database.", "AI")
+            ],
+            "reusable-site-ai" =>
+            [
+                new("Discover accessible site knowledge", "A site adapter maps allowed routes, titles, links, fields, tables, controls, and meaningful content without entering the private backend.", "MAP"),
+                new("Read the current page", "At question time the extension captures what the signed-in user can currently see, so the answer understands the live task in front of them.", "DOM"),
+                new("Sanitize and isolate", "Session values and sensitive URL fields are removed, while SQLite metadata and Chroma vectors stay inside a separate site and user workspace.", "SAFE"),
+                new("Retrieve live-first", "Current-page context outranks stored copies, then hybrid search adds supporting evidence from the wider site knowledge base.", "RAG"),
+                new("Answer and navigate", "The response includes a recognizable source title and opens the exact canonical page before a route-level fallback is considered.", "SOURCE")
+            ],
+            "dr-solution" =>
+            [
+                new("Document intake", "The API validates PDF and image inputs, size limits, page limits, and the selected study mode.", "UPLOAD"),
+                new("Visual page extraction", "PyMuPDF renders each page and preserves the image context alongside extracted text.", "PDF"),
+                new("Multimodal analysis", "Gemini analyzes page batches for translation, explanation, imagery, key points, and summaries.", "AI"),
+                new("Interactive study view", "The browser renders visual slides, chapter context, configurable questions, and contextual chat.", "UI"),
+                new("Portable output", "The exporter creates a single interactive HTML file that can be opened without the application server.", "EXPORT")
+            ],
+            _ =>
+            [
+                new("Media intake", "The local workflow accepts supported YouTube videos and playlists for processing.", "INPUT"),
+                new("Frame sampling", "FFmpeg extracts representative frames from the timeline.", "FRAMES"),
+                new("Text and vision", "OCR or vision analysis reads Arabic and English learning goals from useful slide frames.", "OCR"),
+                new("Deduplication", "Repeated frames and repeated goals are reduced before export.", "CLEAN"),
+                new("Structured report", "The final result is organized for review instead of remaining buried inside video timelines.", "REPORT")
+            ]
+        };
+    }
+
+    private IReadOnlyList<EvidenceMedia> GetEvidence(string slug)
+    {
+        if (IsArabic)
+        {
+            return slug switch
+            {
+                "reusable-site-ai" =>
+                [
+                    new("/media/projects/university-site.png", "الجامعة · البوابة الأصلية", "تبقى بوابة Oracle APEX الموثقة هي مصدر الحقيقة وتحافظ على صلاحياتها الحالية.", "بوابة الجامعة بعد تسجيل الدخول وقبل فتح مساعد الذكاء"),
+                    new("/media/projects/university-ai-assistant.png", "الجامعة · سياق الصفحة الحي", "يتعرف المساعد إلى المستخدم المسجل ويشرح المعلومات من الصفحة المفتوحة حاليًا.", "بوابة الجامعة مع مساعد يستخدم سياق الصفحة الحية"),
+                    new("/media/projects/university-ai-navigation.png", "الجامعة · انتقال دقيق", "تقدم الإجابة الموثقة خطوات عملية وتعرض الصفحة ذات الصلة كمصدر قابل للفتح.", "مساعد الجامعة يقدم خطوات وانتقالًا دقيقًا للمصدر"),
+                    new("/media/projects/taqat-ai-assistant.png", "طاقات · المحول الثاني", "تعمل النواة نفسها مع منصة تعليمية وواجهة وبنية معرفة مختلفة.", "أكاديمية طاقات مع مساعد الذكاء القابل لإعادة الاستخدام")
+                ],
+                "dr-solution" =>
+                [
+                    new("/media/projects/dr-solution-live.png", "منتج حي · الإصدار 3.0.0", "تستقبل مساحة الدراسة العربية المنشورة ملفات PDF والصور وتقدم خيارات للتحليل والاختبارات.", "مساحة تحليل الملفات الأكاديمية الحية في Dr. Solution"),
+                    new("/media/projects/dr-solution-ai-chat.png", "محادثة ذكاء سياقية", "يجيب المساعد المدمج من مساحة الدراسة والتحليل الظاهر للمتعلم حاليًا.", "Dr. Solution مع لوحة المحادثة السياقية مفتوحة")
+                ],
+                _ => []
+            };
+        }
+
+        return slug switch
+        {
+            "reusable-site-ai" =>
+            [
+                new("/media/projects/university-site.png", "UNIVERSITY · BASE PORTAL", "The authenticated Oracle APEX portal remains the source of truth and keeps its existing permissions.", "Authenticated university portal before opening the AI assistant"),
+                new("/media/projects/university-ai-assistant.png", "UNIVERSITY · LIVE PAGE CONTEXT", "The assistant identifies the signed-in user and explains information from the page currently open.", "University portal with the AI assistant using live page context"),
+                new("/media/projects/university-ai-navigation.png", "UNIVERSITY · EXACT NAVIGATION", "A grounded answer gives practical steps and exposes the relevant page as an actionable source.", "University AI assistant giving steps and exact page navigation"),
+                new("/media/projects/taqat-ai-assistant.png", "TAQAT · SECOND ADAPTER", "The same core runs against a different learning platform, interface, and knowledge structure.", "Taqat Academy with the reusable AI assistant integrated")
+            ],
+            "dr-solution" =>
+            [
+                new("/media/projects/dr-solution-live.png", "LIVE PRODUCT · VERSION 3.0.0", "The deployed Arabic study workspace accepts PDFs and images and exposes configurable analysis and quiz controls.", "Live Dr. Solution academic file analysis workspace"),
+                new("/media/projects/dr-solution-ai-chat.png", "CONTEXTUAL AI CHAT", "The built-in assistant can answer from the study workspace and the analysis currently visible to the learner.", "Dr. Solution with its contextual AI chat panel open")
+            ],
+            _ => []
+        };
+    }
+
+    private IReadOnlyList<Principle> GetPrinciples(string slug)
+    {
+        if (IsArabic)
+        {
+            return slug switch
+            {
+                "fairaid-gaza" =>
+                [
+                    new("النزاهة", "قواعد العمل داخل الخدمات", "تُركز فحوصات التسجيل والسعة والتعارض بدل تكرارها في الصفحات."),
+                    new("التتبع", "الإجراءات المهمة تترك دليلًا", "تجعل سجلات التدقيق والحالات الواضحة التغييرات التشغيلية قابلة للمراجعة."),
+                    new("التسليم", "منتج واحد ورحلات متعددة", "تتغير الواجهة حسب الدور بينما يبقى نموذج المجال متسقًا.")
+                ],
+                "reusable-site-ai" =>
+                [
+                    new("الخصوصية", "لا يجمع كلمات المرور", "يسجل المستخدم دخوله إلى الموقع بالطريقة المعتادة ويعمل المساعد داخل الجلسة الحالية."),
+                    new("العزل", "مساحة مستقلة لكل تثبيت", "تشترك عمليات تخزين الصفحات واسترجاعها وحذفها والبحث المتجهي في حدود المساحة نفسها."),
+                    new("الأدلة", "المصادر قابلة للاستخدام", "تتضمن الإجابات انتقالًا إلى الصفحة الدقيقة بدل نص مولد لا يمكن التحقق منه.")
+                ],
+                "dr-solution" =>
+                [
+                    new("أمان المفتاح", "المستخدم يقدم مفتاحه", "يُستخدم المفتاح للطلب ويُستبعد من السجل المحلي والملفات المصدرة."),
+                    new("السياق البصري", "تبقى صورة الصفحة ظاهرة", "لا يفصل التحليل الشرح عن الرسومات والجداول والتخطيط الأصلي."),
+                    new("قابلية النقل", "المخرجات تعمل دون الخادم", "يحافظ ملف HTML مستقل على تجربة الدراسة بعد تنزيله.")
+                ],
+                _ =>
+                [
+                    new("محلي أولًا", "المعالجة تحت تحكم المستخدم", "صُممت الأداة كمسار محلي لا كخدمة تجمع الوسائط على خادم."),
+                    new("قابل للمراجعة", "الأتمتة لا تلغي دور الإنسان", "تبقى الأهداف المستخرجة واضحة ومنظمة قبل إعادة استخدامها."),
+                    new("التركيز", "مشكلة واحدة ومسار واحد", "يبقى المنتج محددًا ويحسن الرحلة من شريحة الفيديو إلى هدف تعلم قابل للاستخدام.")
+                ]
+            };
+        }
+
+        return slug switch
+        {
+            "fairaid-gaza" =>
+            [
+                new("INTEGRITY", "Business rules live in services", "Enrollment, capacity, and conflict checks are centralized instead of being duplicated across pages."),
+                new("TRACEABILITY", "Important actions leave evidence", "Audit entries and explicit states make operational changes reviewable."),
+                new("DELIVERY", "One product, multiple journeys", "The interface changes by role while the domain model remains consistent.")
+            ],
+            "reusable-site-ai" =>
+            [
+                new("PRIVACY", "No password collection", "The user signs into the website normally; the assistant works inside that existing session."),
+                new("ISOLATION", "One workspace per installation", "Page storage, retrieval, deletion, and vector search share the same workspace boundary."),
+                new("EVIDENCE", "Sources remain actionable", "Answers include exact page navigation instead of an unverifiable block of generated text.")
+            ],
+            "dr-solution" =>
+            [
+                new("KEY SAFETY", "Bring your own key", "A user key is used for the request and excluded from local history and exported files."),
+                new("VISUAL CONTEXT", "The page image stays visible", "Analysis does not detach the explanation from diagrams, tables, and the original layout."),
+                new("PORTABILITY", "The output survives the server", "A standalone HTML export keeps the study experience usable after download.")
+            ],
+            _ =>
+            [
+                new("LOCAL FIRST", "Processing stays under user control", "The tool is designed as a local workflow rather than a hosted media collection service."),
+                new("REVIEWABLE", "Automation keeps human review", "Extracted goals remain visible and structured before they are reused."),
+                new("FOCUSED", "One problem, one pipeline", "The product stays narrow and optimizes the path from video slide to usable learning goal.")
+            ]
+        };
+    }
+
+    private IReadOnlyList<ProjectLink> GetLinks(ProjectDetail item)
+    {
+        var links = new List<ProjectLink>();
+        if (!string.IsNullOrWhiteSpace(item.PreviewUrl))
+        {
+            links.Add(new ProjectLink(T("Open live product", "فتح المنتج الحي"), item.PreviewUrl, true, true));
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.RepositoryUrl))
+        {
+            var repositoryLabel = item.Slug == "reusable-site-ai"
+                ? T("University adapter", "محول الجامعة")
+                : T("View repository", "عرض المستودع");
+            links.Add(new ProjectLink(repositoryLabel, item.RepositoryUrl, true, links.Count == 0));
+        }
+
+        if (item.Slug == "reusable-site-ai")
+        {
+            links.Add(new ProjectLink(T("View GitHub profile", "عرض حساب GitHub"), "https://github.com/aboodtalat123", true, true));
+            links.Add(new ProjectLink(T("Request source access", "طلب الوصول إلى المصدر"), "mailto:aboodtalat123@gmail.com?subject=Site-aware%20AI%20source%20access", false));
+        }
+
+        return links;
+    }
+
+    private static string GetNextSlug(string slug) => slug switch
+    {
+        "reusable-site-ai" => "dr-solution",
+        "dr-solution" => "fairaid-gaza",
+        "fairaid-gaza" => "video-goals-extractor",
+        _ => "reusable-site-ai"
+    };
+
+    private string GetNextTitle(string slug) => slug switch
+    {
+        "reusable-site-ai" => "Dr. Solution",
+        "dr-solution" => IsArabic ? "منصة FairAid Gaza" : "FairAid Gaza",
+        "fairaid-gaza" => IsArabic ? "أداة استخراج أهداف الفيديو" : "Video Goals Extractor",
+        _ => IsArabic ? "طبقة ذكاء آمنة ومدركة للموقع" : "Safe Site-Aware AI Layer"
+    };
+
+    private string T(string english, string arabic) => IsArabic ? arabic : english;
+
+    private string LocalUrl(string path)
+    {
+        if (!IsArabic)
+        {
+            return path;
+        }
+
+        var fragmentIndex = path.IndexOf('#');
+        var fragment = fragmentIndex >= 0 ? path[fragmentIndex..] : string.Empty;
+        var basePath = fragmentIndex >= 0 ? path[..fragmentIndex] : path;
+        var separator = basePath.Contains('?') ? '&' : '?';
+        return $"{basePath}{separator}lang=ar{fragment}";
+    }
+}

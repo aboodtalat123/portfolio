@@ -1,0 +1,49 @@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var documentCulture = string.Equals(HttpContextAccessor.HttpContext?.Request.Query["lang"], "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    var isArabicDocument = documentCulture == "ar";
+}
+
+<!DOCTYPE html>
+<html lang="@documentCulture" dir="@(isArabicDocument ? "rtl" : "ltr")" class="scroll-smooth" data-theme="dark" data-language="@documentCulture">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#15181e" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="description" content="@(isArabicDocument ? "عبد الرحمن طلعت أبو سالم - مطور منتجات .NET آمنة وحلول ويب مدعومة بالذكاء الاصطناعي." : "ABD ALRAHMAN TALAT ABUSALEM - Full-stack developer building secure .NET platforms and AI-powered web systems.")" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/media/portfolio-social.png" />
+    <meta property="og:image:width" content="1732" />
+    <meta property="og:image:height" content="909" />
+    <meta property="og:image:alt" content="@(isArabicDocument ? "مساحات عمل تقنية مرتبطة بطبقة معرفة آمنة للتطبيقات" : "Dark and light code workspaces connected to a secure application knowledge layer")" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <base href="/" />
+    <script>
+        try {
+            const savedTheme = localStorage.getItem("portfolio-theme");
+            const root = document.documentElement;
+            const language = new URLSearchParams(location.search).get("lang")?.toLowerCase() === "ar" ? "ar" : "en";
+            root.dataset.theme = savedTheme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+            root.dataset.language = language;
+            root.lang = language;
+            root.dir = language === "ar" ? "rtl" : "ltr";
+        } catch { }
+    </script>
+    <ResourcePreloader />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["Portfolio.Web.styles.css"]" />
+    <ImportMap />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <ReconnectModal />
+    <script src="@Assets["theme.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+
+</html>

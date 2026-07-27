@@ -1,0 +1,73 @@
+<div class="product-window project-window project-window-@Slug">
+    <div class="product-window__titlebar">
+        <div class="window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span class="product-window__tab">@WindowTitle</span>
+        <span class="product-window__state"><i></i>@StateLabel</span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ImagePath))
+    {
+        <img class="project-window__image" src="@ImagePath" alt="@AltText" loading="lazy" />
+    }
+    else
+    {
+        <div class="project-window__empty" role="img" aria-label="@AltText">
+            <span>&lt;/&gt;</span>
+            <strong>@WindowTitle</strong>
+        </div>
+    }
+
+    <div class="product-window__statusbar">
+        <span><i></i> @StatusText</span>
+        <span>@StackLabel</span>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Slug { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? ImagePath { get; set; }
+
+    [Parameter]
+    public string? AltText { get; set; }
+
+    [Parameter]
+    public string Culture { get; set; } = "en";
+
+    private bool IsArabic => string.Equals(Culture, "ar", StringComparison.OrdinalIgnoreCase);
+
+    private string WindowTitle => Slug switch
+    {
+        "fairaid-gaza" => "fairaid / operations",
+        "reusable-site-ai" => "site-ai / knowledge",
+        "dr-solution" => "dr-solution / study",
+        "video-goals-extractor" => "video-goals / pipeline",
+        _ => "project / preview"
+    };
+
+    private string StateLabel => Slug switch
+    {
+        "fairaid-gaza" => IsArabic ? "منتج حي" : "LIVE PRODUCT",
+        "reusable-site-ai" => IsArabic ? "محولان عاملان" : "2 ADAPTERS",
+        "dr-solution" => IsArabic ? "منشور على RENDER" : "LIVE ON RENDER",
+        _ => IsArabic ? "أداة محلية" : "LOCAL TOOL"
+    };
+
+    private string StatusText => Slug switch
+    {
+        "fairaid-gaza" => IsArabic ? "مسارات حسب الدور" : "role-aware workflows",
+        "reusable-site-ai" => IsArabic ? "إجابات موثقة بالمصادر" : "source-grounded answers",
+        "dr-solution" => IsArabic ? "تحليل مستندات متعدد الوسائط" : "multimodal document analysis",
+        _ => IsArabic ? "أتمتة وسائط منظمة" : "structured media automation"
+    };
+
+    private string StackLabel => Slug switch
+    {
+        "fairaid-gaza" => ".NET · Blazor · EF Core",
+        "reusable-site-ai" => "FastAPI · RAG · Chrome MV3",
+        "dr-solution" => "FastAPI · Gemini · PyMuPDF",
+        _ => "Python · FFmpeg · OCR"
+    };
+}
