@@ -1,11 +1,22 @@
 @page "/"
 @inject IProjectRepository ProjectRepository
+@inject NavigationManager Navigation
 
 <PageTitle>@PageTitleText</PageTitle>
 <HeadContent>
     <meta name="description" content="@MetaDescription" />
+    <meta name="keywords" content="@MetaKeywords" />
+    <meta name="author" content="ABD ALRAHMAN TALAT ABUSALEM" />
+    <link rel="canonical" href="@CanonicalUrl" />
+    <link rel="alternate" hreflang="en" href="@EnglishUrl" />
+    <link rel="alternate" hreflang="ar" href="@ArabicUrl" />
+    <link rel="alternate" hreflang="x-default" href="@EnglishUrl" />
     <meta property="og:title" content="@PageTitleText" />
     <meta property="og:description" content="@MetaDescription" />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:site_name" content="ABD ALRAHMAN TALAT ABUSALEM Portfolio" />
+    <meta property="og:locale" content="@(IsArabic ? "ar_PS" : "en_US")" />
+    <script type="application/ld+json">@((MarkupString)JsonLd)</script>
 </HeadContent>
 
 <div class="site-shell">
@@ -49,6 +60,7 @@
                         <span class="identity-status"><i></i> @T("Available for selected work", "متاح لمشاريع مختارة")</span>
                         <h2>@T("Backend-first.", "عمق في الـ Backend.")<br />@T("Product-minded.", "تفكير بالمنتج.")</h2>
                         <p>@T("C#/.NET engineer building practical AI systems and complete web products.", "مهندس C#/.NET يبني أنظمة ذكاء عملية ومنتجات ويب متكاملة.")</p>
+                        <p class="identity-alias">@T("Also known online as aboodtalat and aboodtalat123.", "أُعرف رقميًا أيضًا باسم aboodtalat و aboodtalat123.")</p>
                     </div>
                 </div>
                 <dl class="identity-card__facts">
@@ -344,6 +356,66 @@
     private string MetaDescription => T(
         "ABD ALRAHMAN TALAT ABUSALEM builds secure ASP.NET Core products and reusable AI knowledge layers that understand websites without direct database access.",
         "عبد الرحمن أبو سالم يطوّر منتجات ASP.NET Core آمنة وطبقات ذكاء قابلة لإعادة الاستخدام تفهم المواقع دون وصول مباشر إلى قواعد بياناتها.");
+
+    private string MetaKeywords => T(
+        "ABD ALRAHMAN TALAT ABUSALEM, Abd Alrahman Talat Abu Salem, Abdalrahman Abu Salem, Abdalrahman Talat, aboodtalat, aboodtalat123, .NET backend developer, ASP.NET Core developer, Blazor developer, applied AI engineer, AI website assistant, Gaza developer, Palestinian software developer",
+        "عبد الرحمن طلعت أبو سالم, عبدالرحمن أبو سالم, عبود طلعت, aboodtalat, aboodtalat123, مطور .NET, مطور ASP.NET Core, مطور Blazor, مهندس ذكاء اصطناعي تطبيقي, مساعد ذكاء اصطناعي للمواقع, مطور من غزة, مطور فلسطيني");
+    private string SiteOrigin
+    {
+        get
+        {
+            var uri = new Uri(Navigation.Uri);
+            return $"{uri.Scheme}://{uri.Host}{(uri.IsDefaultPort ? string.Empty : $":{uri.Port}")}";
+        }
+    }
+    private string EnglishUrl => $"{SiteOrigin}/";
+    private string ArabicUrl => $"{SiteOrigin}/?lang=ar";
+    private string CanonicalUrl => IsArabic ? ArabicUrl : EnglishUrl;
+    private string JsonLd => System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "Person",
+        ["name"] = "ABD ALRAHMAN TALAT ABUSALEM",
+        ["alternateName"] = new[]
+        {
+            "aboodtalat",
+            "aboodtalat123",
+            "Abd Alrahman Talat",
+            "Abdalrahman Abu Salem",
+            "Abdalrahman Talat Abu Salem",
+            "عبد الرحمن طلعت أبو سالم",
+            "عبود طلعت"
+        },
+        ["url"] = EnglishUrl,
+        ["image"] = $"{SiteOrigin}/media/abdalrahman-profile.jpg",
+        ["jobTitle"] = ".NET Backend and Applied AI Engineer",
+        ["email"] = "mailto:aboodtalat123@gmail.com",
+        ["address"] = new Dictionary<string, string>
+        {
+            ["@type"] = "PostalAddress",
+            ["addressLocality"] = "Gaza",
+            ["addressCountry"] = "PS"
+        },
+        ["knowsAbout"] = new[]
+        {
+            "ASP.NET Core",
+            "Blazor",
+            "C#",
+            "Entity Framework Core",
+            "SQL Server",
+            "FastAPI",
+            "Applied AI",
+            "RAG",
+            "AI website assistants",
+            "Secure web systems"
+        },
+        ["sameAs"] = new[]
+        {
+            "https://github.com/aboodtalat123",
+            "https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/"
+        },
+        ["mainEntityOfPage"] = CanonicalUrl
+    });
 
     protected override async Task OnParametersSetAsync()
     {

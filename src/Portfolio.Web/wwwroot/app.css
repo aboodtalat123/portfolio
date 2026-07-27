@@ -558,6 +558,13 @@ html[data-theme="light"] .contact-panel h2 em {
     line-height: 1.65;
 }
 
+.identity-card__person .identity-alias {
+    margin-top: 8px;
+    color: var(--muted-soft);
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 10px;
+}
+
 .identity-status {
     display: inline-flex;
     align-items: center;

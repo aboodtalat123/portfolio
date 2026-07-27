@@ -41,6 +41,66 @@ app.MapGet("/api/health", () => Results.Ok(new
     framework = ".NET 10"
 }));
 
+app.MapGet("/robots.txt", (HttpRequest request) =>
+{
+    var origin = $"{request.Scheme}://{request.Host}";
+    var robots = $"""
+        User-agent: *
+        Allow: /
+
+        Sitemap: {origin}/sitemap.xml
+        """;
+
+    return Results.Text(robots, "text/plain");
+});
+
+app.MapGet("/sitemap.xml", async (
+    HttpRequest request,
+    IProjectRepository projects,
+    CancellationToken cancellationToken) =>
+{
+    var origin = $"{request.Scheme}://{request.Host}";
+    var lastModified = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
+    var publishedProjects = await projects.GetPublishedAsync("en", cancellationToken);
+    var urls = new List<string>
+    {
+        $"""
+          <url>
+            <loc>{origin}/</loc>
+            <lastmod>{lastModified}</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>1.0</priority>
+          </url>
+        """,
+        $"""
+          <url>
+            <loc>{origin}/?lang=ar</loc>
+            <lastmod>{lastModified}</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.9</priority>
+          </url>
+        """
+    };
+
+    urls.AddRange(publishedProjects.Select(project => $"""
+          <url>
+            <loc>{origin}/work/{project.Slug}</loc>
+            <lastmod>{lastModified}</lastmod>
+            <changefreq>monthly</changefreq>
+            <priority>0.8</priority>
+          </url>
+        """));
+
+    var sitemap = $"""
+        <?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        {string.Join(Environment.NewLine, urls)}
+        </urlset>
+        """;
+
+    return Results.Text(sitemap, "application/xml");
+});
+
 app.MapGet("/api/projects", async (
     string? lang,
     IProjectRepository projects,
