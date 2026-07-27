@@ -260,9 +260,9 @@ public static class PortfolioDatabase
             ],
             ["aspnet-core", "blazor", "ef-core", "sql-server", "sqlite", "fastapi", "gemini", "docker"],
             new(
-                "/media/projects/fairaid-cover.png",
-                "FairAid Gaza Arabic operations dashboard",
-                "لوحة عمليات منصة FairAid Gaza العربية")),
+                "/media/projects/fairaid-nrcapp-showcase.png",
+                "NRCAPP aid coordination platform with AI assistant dashboard",
+                "منصة NRCAPP لتنسيق الإغاثة مع لوحة ذكاء اصطناعي")),
         new(
             Guid.Parse("3f52e32f-9067-4af5-a699-c37f4971262e"),
             "reusable-site-ai",
@@ -293,9 +293,9 @@ public static class PortfolioDatabase
             ],
             ["fastapi", "gemini", "chromadb", "javascript", "chrome-extension", "sqlite", "rag", "docker"],
             new(
-                "/media/projects/site-assistant-cover.png",
-                "University portal knowledge assistant showing indexed coverage",
-                "مساعد بوابة الجامعة يعرض الصفحات المفهرسة ونسبة التغطية")),
+                "/media/projects/site-ai-showcase.png",
+                "Reusable site-aware AI assistant integrated across university, learning, and service platforms",
+                "مساعد ذكاء مدرك للموقع مدمج مع بوابات جامعية وتعليمية وخدمية")),
         new(
             Guid.Parse("71f0db44-f94b-4e76-bbd8-f482833bc4ef"),
             "dr-solution",
@@ -326,9 +326,9 @@ public static class PortfolioDatabase
             ],
             ["python", "fastapi", "gemini", "pymupdf", "pydantic", "javascript", "indexeddb", "docker"],
             new(
-                "/media/projects/dr-solution-cover.png",
-                "Dr. Solution document analysis workspace",
-                "واجهة تحليل المستندات في Dr. Solution")),
+                "/media/projects/dr-solution-showcase.png",
+                "Dr. Solution AI academic study platform for explanation, translation, quizzes, and HTML reports",
+                "منصة Dr. Solution الأكاديمية للشرح والترجمة والأسئلة وتقارير HTML")),
         new(
             Guid.Parse("04526f1a-0218-475f-b989-72a10d6f5e41"),
             "video-goals-extractor",

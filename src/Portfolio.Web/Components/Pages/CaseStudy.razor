@@ -258,18 +258,20 @@
         {
             return slug switch
             {
-                "reusable-site-ai" =>
-                [
-                    new("/media/projects/university-site.png", "الجامعة · البوابة الأصلية", "تبقى بوابة Oracle APEX الموثقة هي مصدر الحقيقة وتحافظ على صلاحياتها الحالية.", "بوابة الجامعة بعد تسجيل الدخول وقبل فتح مساعد الذكاء"),
-                    new("/media/projects/university-ai-assistant.png", "الجامعة · سياق الصفحة الحي", "يتعرف المساعد إلى المستخدم المسجل ويشرح المعلومات من الصفحة المفتوحة حاليًا.", "بوابة الجامعة مع مساعد يستخدم سياق الصفحة الحية"),
-                    new("/media/projects/university-ai-navigation.png", "الجامعة · انتقال دقيق", "تقدم الإجابة الموثقة خطوات عملية وتعرض الصفحة ذات الصلة كمصدر قابل للفتح.", "مساعد الجامعة يقدم خطوات وانتقالًا دقيقًا للمصدر"),
-                    new("/media/projects/taqat-ai-assistant.png", "طاقات · المحول الثاني", "تعمل النواة نفسها مع منصة تعليمية وواجهة وبنية معرفة مختلفة.", "أكاديمية طاقات مع مساعد الذكاء القابل لإعادة الاستخدام")
-                ],
-                "dr-solution" =>
-                [
-                    new("/media/projects/dr-solution-live.png", "منتج حي · الإصدار 3.0.0", "تستقبل مساحة الدراسة العربية المنشورة ملفات PDF والصور وتقدم خيارات للتحليل والاختبارات.", "مساحة تحليل الملفات الأكاديمية الحية في Dr. Solution"),
-                    new("/media/projects/dr-solution-ai-chat.png", "محادثة ذكاء سياقية", "يجيب المساعد المدمج من مساحة الدراسة والتحليل الظاهر للمتعلم حاليًا.", "Dr. Solution مع لوحة المحادثة السياقية مفتوحة")
-                ],
+            "reusable-site-ai" =>
+            [
+                new("/media/projects/site-ai-adapters.png", "المحولات · تطبيقات متعددة", "تظهر النواة نفسها وهي تعمل على بوابة جامعة ومنصة تعليمية معزولتين.", "مساعد ذكاء مدرك للموقع يعمل على بوابة جامعة ومنصة طاقات"),
+                new("/media/projects/university-site.png", "الجامعة · البوابة الأصلية", "تبقى بوابة Oracle APEX الموثقة هي مصدر الحقيقة وتحافظ على صلاحياتها الحالية.", "بوابة الجامعة بعد تسجيل الدخول وقبل فتح مساعد الذكاء"),
+                new("/media/projects/university-ai-assistant.png", "الجامعة · سياق الصفحة الحي", "يتعرف المساعد إلى المستخدم المسجل ويشرح المعلومات من الصفحة المفتوحة حاليًا.", "بوابة الجامعة مع مساعد يستخدم سياق الصفحة الحية"),
+                new("/media/projects/university-ai-navigation.png", "الجامعة · انتقال دقيق", "تقدم الإجابة الموثقة خطوات عملية وتعرض الصفحة ذات الصلة كمصدر قابل للفتح.", "مساعد الجامعة يقدم خطوات وانتقالًا دقيقًا للمصدر"),
+                new("/media/projects/taqat-ai-assistant.png", "طاقات · المحول الثاني", "تعمل النواة نفسها مع منصة تعليمية وواجهة وبنية معرفة مختلفة.", "أكاديمية طاقات مع مساعد الذكاء القابل لإعادة الاستخدام")
+            ],
+            "dr-solution" =>
+            [
+                new("/media/projects/dr-solution-workspace-showcase.png", "تجربة الدراسة · مساحة تحليل", "تعرض المنصة مساحة رفع الملفات وإعدادات التحليل داخل واجهة عربية منشورة.", "Dr. Solution على شاشة حاسوب مع مساحة تحليل الملفات"),
+                new("/media/projects/dr-solution-live.png", "منتج حي · الإصدار 3.0.0", "تستقبل مساحة الدراسة العربية المنشورة ملفات PDF والصور وتقدم خيارات للتحليل والاختبارات.", "مساحة تحليل الملفات الأكاديمية الحية في Dr. Solution"),
+                new("/media/projects/dr-solution-ai-chat.png", "محادثة ذكاء سياقية", "يجيب المساعد المدمج من مساحة الدراسة والتحليل الظاهر للمتعلم حاليًا.", "Dr. Solution مع لوحة المحادثة السياقية مفتوحة")
+            ],
                 _ => []
             };
         }
@@ -278,6 +280,7 @@
         {
             "reusable-site-ai" =>
             [
+                new("/media/projects/site-ai-adapters.png", "ADAPTERS · MULTIPLE PRODUCTS", "The same core is shown running against a university portal and a learning platform with isolated adapters.", "Site-aware AI assistant running on a university portal and Taqat Academy"),
                 new("/media/projects/university-site.png", "UNIVERSITY · BASE PORTAL", "The authenticated Oracle APEX portal remains the source of truth and keeps its existing permissions.", "Authenticated university portal before opening the AI assistant"),
                 new("/media/projects/university-ai-assistant.png", "UNIVERSITY · LIVE PAGE CONTEXT", "The assistant identifies the signed-in user and explains information from the page currently open.", "University portal with the AI assistant using live page context"),
                 new("/media/projects/university-ai-navigation.png", "UNIVERSITY · EXACT NAVIGATION", "A grounded answer gives practical steps and exposes the relevant page as an actionable source.", "University AI assistant giving steps and exact page navigation"),
@@ -285,6 +288,7 @@
             ],
             "dr-solution" =>
             [
+                new("/media/projects/dr-solution-workspace-showcase.png", "STUDY EXPERIENCE · ANALYSIS WORKSPACE", "The platform shows file upload, explanation controls, quiz settings, and contextual assistance in a live Arabic interface.", "Dr. Solution on a laptop with the academic file analysis workspace"),
                 new("/media/projects/dr-solution-live.png", "LIVE PRODUCT · VERSION 3.0.0", "The deployed Arabic study workspace accepts PDFs and images and exposes configurable analysis and quiz controls.", "Live Dr. Solution academic file analysis workspace"),
                 new("/media/projects/dr-solution-ai-chat.png", "CONTEXTUAL AI CHAT", "The built-in assistant can answer from the study workspace and the analysis currently visible to the learner.", "Dr. Solution with its contextual AI chat panel open")
             ],
