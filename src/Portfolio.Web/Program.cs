@@ -43,7 +43,7 @@ app.MapGet("/api/health", () => Results.Ok(new
 
 app.MapGet("/robots.txt", (HttpRequest request) =>
 {
-    var origin = $"{request.Scheme}://{request.Host}";
+    var origin = GetPublicOrigin(request);
     var robots = $"""
         User-agent: *
         Allow: /
@@ -59,7 +59,7 @@ app.MapGet("/sitemap.xml", async (
     IProjectRepository projects,
     CancellationToken cancellationToken) =>
 {
-    var origin = $"{request.Scheme}://{request.Host}";
+    var origin = GetPublicOrigin(request);
     var lastModified = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
     var publishedProjects = await projects.GetPublishedAsync("en", cancellationToken);
     var urls = new List<string>
@@ -128,3 +128,19 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.Run();
+
+static string GetPublicOrigin(HttpRequest request)
+{
+    var forwardedScheme = request.Headers["X-Forwarded-Proto"]
+        .ToString()
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .FirstOrDefault();
+
+    var scheme = forwardedScheme is not null
+        && (forwardedScheme.Equals("https", StringComparison.OrdinalIgnoreCase)
+            || forwardedScheme.Equals("http", StringComparison.OrdinalIgnoreCase))
+            ? forwardedScheme.ToLowerInvariant()
+            : request.Scheme;
+
+    return $"{scheme}://{request.Host}";
+}
