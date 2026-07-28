@@ -1,0 +1,65 @@
+<aside class="portfolio-assistant" data-portfolio-assistant>
+    <button class="assistant-launcher"
+            type="button"
+            data-assistant-launcher
+            aria-controls="portfolio-assistant-panel"
+            aria-expanded="false">
+        <span class="assistant-launcher__mark" aria-hidden="true">A</span>
+        <span data-assistant-launcher-label>Ask AI</span>
+        <i aria-hidden="true"></i>
+    </button>
+
+    <section class="assistant-panel"
+             id="portfolio-assistant-panel"
+             data-assistant-panel
+             role="dialog"
+             aria-modal="false"
+             aria-labelledby="portfolio-assistant-title"
+             hidden>
+        <header class="assistant-panel__header">
+            <div>
+                <span class="assistant-panel__eyebrow" data-assistant-eyebrow>PORTFOLIO GUIDE</span>
+                <h2 id="portfolio-assistant-title" data-assistant-title>Ask about my work</h2>
+            </div>
+            <button class="assistant-close" type="button" data-assistant-close aria-label="Close assistant">×</button>
+        </header>
+
+        <div class="assistant-context">
+            <span><i aria-hidden="true"></i><span data-assistant-context-label>Using this page as context</span></span>
+            <small data-assistant-no-storage>Sent to Gemini · not stored here</small>
+        </div>
+
+        <div class="assistant-messages"
+             data-assistant-messages
+             role="log"
+             aria-live="polite"
+             aria-relevant="additions text"></div>
+
+        <div class="assistant-suggestions" data-assistant-suggestions>
+            <button type="button" data-assistant-suggestion="site-ai"></button>
+            <button type="button" data-assistant-suggestion="security"></button>
+            <button type="button" data-assistant-suggestion="dotnet"></button>
+        </div>
+
+        <form class="assistant-form" data-assistant-form>
+            <label class="visually-hidden" for="portfolio-assistant-question" data-assistant-input-label>
+                Ask a question about Abd Alrahman's work
+            </label>
+            <textarea id="portfolio-assistant-question"
+                      data-assistant-input
+                      rows="2"
+                      maxlength="500"
+                      enterkeyhint="send"
+                      autocomplete="off"
+                      placeholder="Ask about a project, skill, or service..."></textarea>
+            <button type="submit" data-assistant-send>
+                <span data-assistant-send-label>Send</span>
+                <span aria-hidden="true">↗</span>
+            </button>
+        </form>
+
+        <p class="assistant-disclaimer" data-assistant-disclaimer>
+            Your question is sent to Gemini. Do not include sensitive information.
+        </p>
+    </section>
+</aside>

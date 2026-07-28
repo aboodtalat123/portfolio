@@ -1,4 +1,9 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using Portfolio.Web.Components;
+using Portfolio.Web.Assistant;
+using Portfolio.Web.Endpoints;
 using Portfolio.Core.Abstractions;
 using Portfolio.Infrastructure;
 using Portfolio.Infrastructure.Persistence;
@@ -14,7 +19,39 @@ var connectionString = builder.Configuration.GetConnectionString("Portfolio")
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 builder.Services.AddPortfolioInfrastructure(connectionString);
+builder.Services.Configure<PortfolioAssistantOptions>(options =>
+{
+    options.ApiKey = builder.Configuration["Gemini:ApiKey"]
+        ?? builder.Configuration["GEMINI_API_KEY"]
+        ?? string.Empty;
+    options.Model = builder.Configuration["Gemini:Model"]
+        ?? builder.Configuration["GEN_MODEL"]
+        ?? PortfolioAssistantOptions.DefaultModel;
+});
+builder.Services.AddScoped<IPortfolioKnowledgeService, PortfolioKnowledgeService>();
+builder.Services.AddHttpClient<IPortfolioAssistantService, GeminiPortfolioAssistant>(client =>
+{
+    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+    client.Timeout = TimeSpan.FromSeconds(25);
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(
+        "portfolio-assistant",
+        httpContext => RateLimitPartition.GetFixedWindowLimiter(
+            GetRateLimitPartitionKey(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 8,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                AutoReplenishment = true
+            }));
+});
 
 var app = builder.Build();
 
@@ -29,16 +66,21 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
+app.UseRateLimiter();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+app.MapPortfolioAssistantEndpoints();
 
-app.MapGet("/api/health", () => Results.Ok(new
+app.MapGet("/api/health", (IOptions<PortfolioAssistantOptions> assistantOptions) => Results.Ok(new
 {
     status = "ok",
     application = "ABD ALRAHMAN TALAT ABUSALEM Portfolio",
-    framework = ".NET 10"
+    framework = ".NET 10",
+    assistant = string.IsNullOrWhiteSpace(assistantOptions.Value.ApiKey)
+        ? "not_configured"
+        : "ready"
 }));
 
 app.MapGet("/robots.txt", (HttpRequest request) =>
@@ -143,4 +185,16 @@ static string GetPublicOrigin(HttpRequest request)
             : request.Scheme;
 
     return $"{scheme}://{request.Host}";
+}
+
+static string GetRateLimitPartitionKey(HttpContext context)
+{
+    var forwardedAddress = context.Request.Headers["X-Forwarded-For"]
+        .ToString()
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .FirstOrDefault();
+
+    return forwardedAddress
+        ?? context.Connection.RemoteIpAddress?.ToString()
+        ?? "unknown";
 }
