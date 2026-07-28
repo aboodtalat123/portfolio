@@ -23,12 +23,19 @@ builder.Services.AddMemoryCache();
 builder.Services.AddPortfolioInfrastructure(connectionString);
 builder.Services.Configure<PortfolioAssistantOptions>(options =>
 {
-    options.ApiKey = builder.Configuration["Gemini:ApiKey"]
-        ?? builder.Configuration["GEMINI_API_KEY"]
-        ?? string.Empty;
-    options.Model = builder.Configuration["Gemini:Model"]
-        ?? builder.Configuration["GEN_MODEL"]
-        ?? PortfolioAssistantOptions.DefaultModel;
+    var apiKey = builder.Configuration["Gemini:ApiKey"];
+    if (string.IsNullOrWhiteSpace(apiKey))
+    {
+        apiKey = builder.Configuration["GEMINI_API_KEY"];
+    }
+    options.ApiKey = apiKey ?? string.Empty;
+
+    var model = builder.Configuration["Gemini:Model"];
+    if (string.IsNullOrWhiteSpace(model))
+    {
+        model = builder.Configuration["GEN_MODEL"];
+    }
+    options.Model = model ?? PortfolioAssistantOptions.DefaultModel;
 });
 builder.Services.AddScoped<IPortfolioKnowledgeService, PortfolioKnowledgeService>();
 builder.Services.AddHttpClient<IPortfolioAssistantService, GeminiPortfolioAssistant>(client =>
