@@ -3194,7 +3194,6 @@ html[dir="rtl"] .case-facts div:last-child {
 }
 
 .portfolio-assistant {
-    display: contents;
     color: var(--text);
 }
 
