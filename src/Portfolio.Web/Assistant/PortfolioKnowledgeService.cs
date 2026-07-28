@@ -46,7 +46,7 @@ public sealed partial class PortfolioKnowledgeService(
         if (selected.Count == 0)
         {
             selected.AddRange(catalog
-                .Where(document => document.SourceId is "profile" or "site-ai")
+                .Where(document => document.SourceId is "profile" or "site-ai" or "site-map")
                 .Take(MaximumContextDocuments)
                 .Select(document => Localize(document, culture)));
         }
@@ -140,7 +140,47 @@ public sealed partial class PortfolioKnowledgeService(
                 LinkedIn: https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/
                 His current CV is available from the Resume link on this portfolio.
                 """,
-                ["contact", "email", "hire", "work", "github", "linkedin", "resume", "cv", "message"])
+                ["contact", "email", "hire", "work", "github", "linkedin", "resume", "cv", "message"]),
+            new(
+                "site-map",
+                "Portfolio site structure and navigation",
+                "/",
+                """
+                The portfolio website has the following pages and sections:
+                
+                Home page (/): The main landing page with the hero section, flagship system description, featured projects, engineering lab, about/profile section, experience timeline, and contact section.
+                
+                Navigation links (header):
+                - System (/): Jump to the flagship AI system section
+                - Work (/): Jump to the featured projects section
+                - About (/): Jump to the profile and experience section
+                - Contact (/): Jump to the contact and links section
+                - CV (/files/Abdalrahman_Talat_Abu_Salem_CV.pdf): Download the resume
+                
+                Project case studies (under /work/{slug}):
+                - /work/reusable-site-ai: Safe Site-Aware AI Layer
+                - /work/dr-solution: Dr. Solution AI Study Product
+                - /work/fairaid-gaza: FairAid Gaza Aid Operations Platform
+                - /work/video-goals-extractor: Video Goals Extractor
+                
+                Page features:
+                - Language toggle (English/Arabic) via ?lang=ar query parameter
+                - Dark/Light theme toggle
+                - Portfolio assistant (AI chat) available on all pages
+                
+                Footer links:
+                - GitHub: https://github.com/aboodtalat123
+                - LinkedIn: https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/
+                - Email: aboodtalat123@gmail.com
+                - CV: /files/Abdalrahman_Talat_Abu_Salem_CV.pdf
+                - Selected work: /#work
+                
+                The site is built with ASP.NET Core Blazor (Interactive Server rendering) and styled with custom CSS variables supporting dark and light themes.
+                """,
+                [
+                    "site map", "navigation", "pages", "routes", "home", "sections",
+                    "header", "footer", "links", "structure", "blazor", "asp.net", "theme"
+                ])
         };
 
         AddProjectDocuments(documents, details, "en");
@@ -179,7 +219,46 @@ public sealed partial class PortfolioKnowledgeService(
                 LinkedIn: https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/
                 يمكن فتح السيرة الذاتية الحالية من رابط السيرة الذاتية في هذا الموقع.
                 """,
-                ["تواصل", "البريد", "توظيف", "عمل", "جيت هاب", "لينكد ان", "السيرة", "رسالة"])
+                ["تواصل", "البريد", "توظيف", "عمل", "جيت هاب", "لينكد ان", "السيرة", "رسالة"]),
+            new(
+                "site-map",
+                "هيكل الموقع وخريطته",
+                "/",
+                """
+                يتكون موقع البورتفوليو من الصفحات والأقسام التالية:
+                
+                الصفحة الرئيسية (/): تضم قسم الترحيب، النظام الرئيسي للذكاء الاصطناعي، المشاريع المميزة، المختبر الهندسي، قسم التعريف بالملف المهني، الجدول الزمني للخبرات، وقسم التواصل.
+                
+                روابط التنقل (الشريط العلوي):
+                - النظام: الانتقال إلى قسم النظام الرئيسي
+                - الأعمال: الانتقال إلى قسم المشاريع
+                - عن: الانتقال إلى قسم الملف المهني والخبرات
+                - التواصل: الانتقال إلى قسم التواصل والروابط
+                - السيرة الذاتية: تحميل السيرة الذاتية
+                
+                دراسات حالة المشاريع (تحت /work/{slug}):
+                - /work/reusable-site-ai: طبقة ذكاء آمنة ومدركة للموقع
+                - /work/dr-solution: Dr. Solution منتج تعلم بالذكاء الاصطناعي
+                - /work/fairaid-gaza: منصة FairAid Gaza للمساعدات
+                - /work/video-goals-extractor: أداة استخراج أهداف الفيديو
+                
+                مزايا الصفحة:
+                - تبديل اللغة (عربي/إنجليزي) عبر ?lang=ar
+                - تبديل السمة (داكن/فاتح)
+                - مساعد ذكي متاح في كل الصفحات
+                
+                روابط التذييل:
+                - GitHub: https://github.com/aboodtalat123
+                - LinkedIn: https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/
+                - البريد: aboodtalat123@gmail.com
+                - السيرة الذاتية: /files/Abdalrahman_Talat_Abu_Salem_CV.pdf
+                
+                الموقع مبني بـ ASP.NET Core Blazor (تفاعلي من الخادم) ومصمم بمتغيرات CSS تدعم السمة الداكنة والفاتحة.
+                """,
+                [
+                    "خريطة الموقع", "التنقل", "الصفحات", "المسارات", "الرئيسية", "الأقسام",
+                    "الشريط العلوي", "التذييل", "الروابط", "الهيكل", "بلازور", "السمة"
+                ])
         };
 
         AddProjectDocuments(documents, details, "ar");
@@ -273,25 +352,34 @@ public sealed partial class PortfolioKnowledgeService(
 
     private static HashSet<string> PreferredSourceIds(string path, string section)
     {
+        var pageSpecific = new List<string>();
+
         if (path.StartsWith("/work/", StringComparison.OrdinalIgnoreCase))
         {
-            return path["/work/".Length..] switch
+            pageSpecific.AddRange(path["/work/".Length..] switch
             {
                 "reusable-site-ai" => ["site-ai"],
                 "dr-solution" => ["dr-solution"],
                 "fairaid-gaza" => ["fairaid"],
                 _ => []
-            };
+            });
         }
 
-        return section switch
+        pageSpecific.AddRange(section switch
         {
             "system" => ["site-ai"],
             "work" => ["site-ai", "dr-solution", "fairaid"],
             "about" => ["profile"],
             "contact" => ["contact"],
             _ => []
-        };
+        });
+
+        if (pageSpecific.Count == 0 || path == "/")
+        {
+            pageSpecific.Add("site-map");
+        }
+
+        return [.. pageSpecific];
     }
 
     private static AssistantKnowledgeDocument Localize(

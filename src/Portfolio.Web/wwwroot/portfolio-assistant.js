@@ -81,6 +81,7 @@
         let activeSection = window.location.hash.replace("#", "");
         let sectionObserver = null;
         let lastFocusedElement = null;
+        let assistantProgrammaticClose = false;
 
         launcherLabel.textContent = copy.launcher;
         launcher.setAttribute("aria-label", copy.title);
@@ -111,10 +112,11 @@
             panel.hidden = false;
             launcher.setAttribute("aria-expanded", "true");
             root.classList.add("is-open");
-            window.setTimeout(() => input.focus(), 30);
+            window.setTimeout(() => input.focus(), 50);
         }
 
         function closePanel({ restoreFocus = true } = {}) {
+            assistantProgrammaticClose = true;
             panel.hidden = true;
             launcher.setAttribute("aria-expanded", "false");
             root.classList.remove("is-open");
@@ -124,6 +126,12 @@
                     : launcher;
                 focusTarget.focus();
             }
+            window.setTimeout(() => { assistantProgrammaticClose = false; }, 100);
+        }
+
+        function togglePanel() {
+            if (panel.hidden) openPanel();
+            else closePanel();
         }
 
         function addMessage(role, text, sources = []) {
@@ -267,10 +275,7 @@
             }
         }
 
-        launcher.addEventListener("click", () => {
-            if (panel.hidden) openPanel();
-            else closePanel();
-        });
+        launcher.addEventListener("click", () => togglePanel());
         closeButton.addEventListener("click", () => closePanel());
         form.addEventListener("submit", (event) => {
             event.preventDefault();
@@ -349,6 +354,20 @@
         if (panel && !panel.hidden) {
             event.preventDefault();
             root.closeAssistant?.();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === "a" || event.key === "A")) {
+            event.preventDefault();
+            const root = document.querySelector("[data-portfolio-assistant]");
+            if (!root) return;
+            const panel = root.querySelector("[data-assistant-panel]");
+            if (panel?.hidden) {
+                root.openAssistant?.();
+            } else {
+                root.closeAssistant?.();
+            }
         }
     });
 
