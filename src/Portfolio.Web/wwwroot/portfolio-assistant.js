@@ -52,6 +52,10 @@
     let initializedRoot = null;
     let disposeActiveContext = null;
 
+    function detectQuestionLanguage(text) {
+        return /[\u0600-\u06FF]/.test(text) ? "ar" : null;
+    }
+
     function initialize() {
         const root = document.querySelector("[data-portfolio-assistant]");
         if (!root) return;
@@ -65,7 +69,8 @@
         root.dataset.initialized = "true";
         initializedRoot = root;
 
-        const language = document.documentElement.dataset.language === "ar" ? "ar" : "en";
+        const pageLanguage = document.documentElement.dataset.language === "ar" ? "ar" : "en";
+        const language = pageLanguage;
         const copy = translations[language];
         const launcher = root.querySelector("[data-assistant-launcher]");
         const launcherLabel = root.querySelector("[data-assistant-launcher-label]");
@@ -225,7 +230,7 @@
                     },
                     body: JSON.stringify({
                         question,
-                        language,
+                        language: detectQuestionLanguage(question) ?? language,
                         path: window.location.pathname,
                         section: activeSection,
                         pageContext: readCurrentPageContext(),

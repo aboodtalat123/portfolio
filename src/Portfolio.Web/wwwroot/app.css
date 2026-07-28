@@ -3196,15 +3196,14 @@ html[dir="rtl"] .case-facts div:last-child {
 .portfolio-assistant {
     position: fixed;
     z-index: 90;
-    inset: 0;
     pointer-events: none;
     color: var(--text);
 }
 
 /* ---- Launcher: floating bottom-right ---- */
 .assistant-launcher {
-    position: absolute;
-    z-index: 2;
+    position: fixed;
+    z-index: 92;
     bottom: 24px;
     right: 24px;
     pointer-events: auto;
@@ -3293,8 +3292,8 @@ html[dir="rtl"] .portfolio-assistant[data-position="left"] .assistant-launcher {
 
 /* ---- Panel: slides from right, full height ---- */
 .assistant-panel {
-    position: absolute;
-    z-index: 1;
+    position: fixed;
+    z-index: 91;
     top: 0;
     right: 0;
     bottom: 0;
