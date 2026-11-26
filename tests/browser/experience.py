@@ -13,6 +13,8 @@ with sync_playwright() as p:
         page = context.new_page()
         page.on("pageerror", lambda err: errors.append(str(err)))
         assert page.goto(base + "/" + locale).ok
+        framework_script = page.locator('script[src*="_framework/blazor.web"]').get_attribute("src")
+        assert framework_script and page.request.get(base + "/" + framework_script.lstrip("/")).ok
         expect(page.locator("html")).to_have_attribute("dir", "rtl" if locale else "ltr")
         expect(page.locator(".v2-portrait img")).to_be_visible()
         assert page.locator(".v2-portrait img").evaluate("e => e.naturalWidth") > 0
