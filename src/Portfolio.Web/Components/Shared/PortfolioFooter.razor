@@ -6,7 +6,8 @@
         </div>
         <nav aria-label="@T("Footer navigation", "روابط التذييل")">
             <a href="@HomeLink("#system")">@T("Core innovation", "الابتكار الأساسي")</a>
-            <a href="@HomeLink("#work")">@T("Live products", "المشاريع الحية")</a>
+            <a href="@HomeLink("#work")">@T("Selected work", "أعمال مختارة")</a>
+            <a href="@(Culture == "ar" ? "/privacy?lang=ar" : "/privacy")">@T("Privacy", "الخصوصية")</a>
             <a href="@HomeLink("#about")">@T("Profile", "الملف المهني")</a>
             <a href="https://github.com/aboodtalat123" target="_blank" rel="noreferrer">GitHub ↗</a>
             <a href="https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
@@ -15,7 +16,7 @@
     </div>
     <div class="footer-statusbar">
         <div class="page-shell">
-            <span><i></i> @T("Available for selected projects", "متاح لمشاريع مختارة")</span>
+            <span><i></i> @T("Engineering portfolio", "ملف الأعمال الهندسية")</span>
             <span>© @DateTime.UtcNow.Year @T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن طلعت أبو سالم")</span>
             <span>ASP.NET Core · SSR</span>
         </div>

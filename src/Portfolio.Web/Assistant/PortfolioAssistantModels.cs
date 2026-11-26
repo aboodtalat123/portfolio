@@ -30,7 +30,7 @@ public sealed record AssistantSource(
 public sealed record AssistantChatResponse(
     string Answer,
     IReadOnlyList<AssistantSource> Sources,
-    string Confidence);
+    string Confidence, AssistantNavigation? Navigation = null);
 
 public sealed record AssistantKnowledgeDocument(
     string SourceId,
@@ -63,6 +63,8 @@ public sealed class PortfolioAssistantOptions
     public string ApiKey { get; set; } = string.Empty;
 
     public string Model { get; set; } = DefaultModel;
+
+    public int DailyRequestLimit { get; set; } = 150;
 }
 
 public interface IPortfolioKnowledgeService

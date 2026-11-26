@@ -1,0 +1,57 @@
+@page "/pitch"
+<PageTitle>SiteAware AI · @T("Pitch", "العرض")</PageTitle>
+<PortfolioHeader Culture="@Culture" />
+<main class="v2 page-shell v2-document">
+    <p class="v2-label">@T("Product presentation", "عرض المنتج")</p>
+    <h1>SiteAware AI</h1>
+    <p class="v2-lead">@Editorial.Work[0].Summary.In(Culture)</p>
+    <div class="project-actions">
+        <a class="button button-secondary" href="@(Culture == "ar" ? "/pitch/download?lang=ar" : "/pitch/download")" download data-enhance-nav="false">@T("Download pitch · PDF", "تنزيل العرض · PDF")</a>
+    </div>
+    <nav class="v2-pitch-nav" aria-label="@T("Slides", "الشرائح")">
+        @for (var i = 0; i < Slides.Length; i++)
+        {
+            <a href="@($"{PitchPath}#slide-{i + 1}")" data-enhance-nav="false">@(i + 1). @Slides[i].Title.In(Culture)</a>
+        }
+    </nav>
+    @for (var i = 0; i < Slides.Length; i++)
+    {
+        <section class="v2-slide" id="@($"slide-{i + 1}")">
+            <h2>@Slides[i].Title.In(Culture)</h2><p>@Slides[i].Body.In(Culture)</p>
+            <nav class="v2-slide-actions" aria-label="@T($"Slide {i + 1} controls", $"التنقل من الشريحة {i + 1}")">
+                @if (i > 0)
+                {
+                    <a href="@($"{PitchPath}#slide-{i}")" data-enhance-nav="false">@T("Previous", "السابق")</a>
+                }
+                @if (i + 1 < Slides.Length)
+                {
+                    <a href="@($"{PitchPath}#slide-{i + 2}")" data-enhance-nav="false">@T("Next", "التالي")</a>
+                }
+            </nav>
+        </section>
+    }
+    <a class="button button-secondary" href="mailto:aboodtalat123@gmail.com">@T("Discuss collaboration", "ناقش فرص التعاون")</a>
+</main>
+<PortfolioFooter Culture="@Culture" />
+@code {
+    [SupplyParameterFromQuery(Name = "lang")] public string? Language { get; set; }
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private string PitchPath => Culture == "ar" ? "/pitch?lang=ar" : "/pitch";
+    private string T(string en, string ar) => Culture == "ar" ? ar : en;
+    private static readonly (LocalText Title, LocalText Body)[] Slides =
+    [
+        (new("Vision", "الرؤية"), new("An agent needs an evidence-backed understanding of an application before it can guide people through it or carry out authorized work.", "يحتاج الوكيل لفهم التطبيق من أدلة موثوقة قبل أن يرشد المستخدم أو ينفذ عملاً مصرحاً به.")),
+        (new("Problem", "المشكلة"), Editorial.Work[0].Challenge),
+        (new("Solution", "الحل"), new("Combine interface evidence, approved knowledge and current-page context to answer questions and verify guidance.", "نجمع أدلة الواجهة والمعرفة المعتمدة وسياق الصفحة للإجابة والتحقق من الإرشاد.")),
+        (new("Architecture", "المعمارية"), Editorial.Work[0].Engineering),
+        (new("Product surfaces", "واجهات المنتج"), new("Studio configures applications and knowledge. The extension observes authorized browser interfaces. The embedded widget delivers contextual answers and verified guidance.", "يضبط الاستوديو التطبيقات والمعرفة. ترصد الإضافة واجهات المتصفح المصرح بها. يقدم المساعد المدمج إجابات سياقية وإرشاداً متحققاً.")),
+        (new("What works today", "ما يعمل اليوم"), new("Evidence-linked page and route maps connect application goals to observed interface controls. The assistant combines verified paths with approved document retrieval.", "تربط خرائط الصفحات والمسارات المدعومة بالأدلة أهداف التطبيق بعناصر الواجهة المرصودة. يجمع المساعد المسارات المتحققة مع استرجاع المستندات المعتمدة.")),
+        (new("Agent foundations", "أسس الوكلاء"), Editorial.Work[0].Status),
+        (new("Reliability", "الموثوقية"), new("Scoped knowledge access, bounded provider use and evidence-linked navigation support review and controlled operation.", "تدعم حدود الوصول للمعرفة وضبط استخدام المزود وربط التنقل بالأدلة المراجعة والتشغيل المضبوط.")),
+        (new("Validation", "التحقق"), new("Engineering evaluation covers browser workflows, source retrieval and unsupported requests. Integrated releases and document answer quality remain under evaluation.", "يشمل التقييم الهندسي تدفقات المتصفح واسترجاع المصادر والطلبات غير المدعومة. ما زال الإصدار المتكامل وجودة الإجابات المستندية قيد التقييم.")),
+        (new("Proposed users", "المستخدمون المقترحون"), Editorial.PitchAudience),
+        (new("Proposed business model", "نموذج العمل المقترح"), Editorial.PitchBusiness),
+        (new("Roadmap", "خارطة الطريق"), Editorial.PitchRoadmap),
+        (new("Founder & collaboration", "المؤسس والتعاون"), new("Abd Alrahman Talat Abu Salem, Founder & Applied AI Engineer. Seeking technical and design partners for application intelligence.", "عبد الرحمن طلعت أبو سالم، المؤسس ومهندس الذكاء الاصطناعي التطبيقي. أبحث عن شركاء تقنيين وشركاء تصميم في ذكاء التطبيقات."))
+    ];
+}

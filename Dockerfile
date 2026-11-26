@@ -16,4 +16,4 @@ WORKDIR /app
 ENV ASPNETCORE_ENVIRONMENT=Production
 COPY --from=build /app/publish .
 
-CMD ["sh", "-c", "dotnet Portfolio.Web.dll --urls http://0.0.0.0:${PORT:-10000}"]
+CMD ["sh", "-c", "exec dotnet Portfolio.Web.dll --urls http://0.0.0.0:${PORT:-10000}"]

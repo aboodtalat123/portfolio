@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.RateLimiting;
 using Portfolio.Web.Assistant;
 using System.Text.Json;
@@ -23,11 +22,7 @@ public static class AssistantEndpoints
         return endpoints;
     }
 
-    private static async Task<Results<
-        Ok<AssistantChatResponse>,
-        BadRequest<object>,
-        StatusCodeHttpResult,
-        JsonHttpResult<object>>> HandleChatAsync(
+    private static async Task<IResult> HandleChatAsync(
         HttpContext httpContext,
         IPortfolioAssistantService assistant,
         CancellationToken cancellationToken)
@@ -48,7 +43,8 @@ public static class AssistantEndpoints
 
         if (!IsSameOriginRequest(httpContext.Request))
         {
-            return TypedResults.StatusCode(StatusCodes.Status403Forbidden);
+            return TypedResults.Json<object>(new { error = "origin_rejected" },
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         var (request, readError) = await ReadRequestAsync(
@@ -69,13 +65,27 @@ public static class AssistantEndpoints
             return TypedResults.BadRequest<object>(new { error = validationError });
         }
 
+        httpContext.Response.Headers.CacheControl = "no-store";
+        if (httpContext.Request.Headers.Accept.ToString() == "application/x-ndjson")
+        {
+            return Results.Stream(async stream =>
+            {
+                await WriteEventAsync(stream, new { stage = "reading" }, cancellationToken);
+                try
+                {
+                    var reply = await RespondAsync(assistant, validated, cancellationToken);
+                    await WriteEventAsync(stream, new { stage = "complete", reply }, cancellationToken);
+                }
+                catch (PortfolioAssistantUnavailableException)
+                {
+                    await WriteEventAsync(stream, new { stage = "unavailable" }, cancellationToken);
+                }
+            }, "application/x-ndjson");
+        }
+
         try
         {
-            var result = await assistant.AskAsync(validated, cancellationToken);
-            return TypedResults.Ok(new AssistantChatResponse(
-                result.Answer,
-                result.Sources,
-                result.Confidence));
+            return TypedResults.Ok(await RespondAsync(assistant, validated, cancellationToken));
         }
         catch (PortfolioAssistantUnavailableException)
         {
@@ -83,6 +93,28 @@ public static class AssistantEndpoints
                 new { error = "assistant_unavailable" },
                 statusCode: StatusCodes.Status503ServiceUnavailable);
         }
+    }
+
+    private static async Task<AssistantChatResponse> RespondAsync(IPortfolioAssistantService assistant,
+        ValidatedAssistantRequest request, CancellationToken cancellationToken)
+    {
+        var navigation = AssistantNavigationPolicy.FromQuestion(request);
+        if (navigation is not null)
+        {
+            return new AssistantChatResponse(
+                request.Language == "ar" ? "يمكنك فتح الوجهة من الرابط أدناه." : "Use the link below to open the destination.",
+                [], "navigation", navigation);
+        }
+
+        var answer = await assistant.AskAsync(request, cancellationToken);
+        return new AssistantChatResponse(answer.Answer, answer.Sources, answer.Confidence);
+    }
+
+    private static async Task WriteEventAsync<T>(Stream stream, T data, CancellationToken cancellationToken)
+    {
+        await JsonSerializer.SerializeAsync(stream, data, JsonOptions, cancellationToken);
+        await stream.WriteAsync("\n"u8.ToArray(), cancellationToken);
+        await stream.FlushAsync(cancellationToken);
     }
 
     private static async Task<(AssistantChatRequest? Request, string Error)> ReadRequestAsync(

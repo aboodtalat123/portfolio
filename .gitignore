@@ -484,3 +484,10 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+.env.local
+REVIEW_PING.md
+REVIEW_PONG.md
+REVIEW_STATUS.md
+REVIEW_FEEDBACK.md
+FINAL_ACCEPTANCE.md

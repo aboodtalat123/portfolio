@@ -1,17 +1,21 @@
 @page "/work/{Slug}"
 @inject IProjectRepository ProjectRepository
 
-<PageTitle>@(project is null ? T("Project not found", "المشروع غير موجود") : $"{project.Title} | {T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن أبو سالم")}")</PageTitle>
+<PageTitle>@(study is not null ? $"{study.Title} | TalatAI" : project is null ? T("Project not found", "المشروع غير موجود") : $"{project.Title} | {T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن أبو سالم")}")</PageTitle>
 <HeadContent>
-    <meta name="description" content="@(project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
+    <meta name="description" content="@(study?.Summary.In(Culture) ?? project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
     <meta property="og:title" content="@(project is null ? T("Project case study", "دراسة حالة مشروع") : $"{project.Title} | {T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن أبو سالم")}")" />
-    <meta property="og:description" content="@(project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
+    <meta property="og:description" content="@(study?.Summary.In(Culture) ?? project?.Summary ?? T("Project case study by ABD ALRAHMAN TALAT ABUSALEM", "دراسة حالة لمشروع من تطوير عبد الرحمن أبو سالم"))" />
 </HeadContent>
 
 <div class="site-shell">
     <PortfolioHeader Culture="@Culture" />
 
-    @if (project is null)
+    @if (study is not null)
+    {
+        <EditorialCase Study="study" Culture="@Culture" />
+    }
+    else if (project is null)
     {
         <main class="case-main page-shell">
             <section class="not-found-panel">
@@ -136,6 +140,7 @@
     public string? Language { get; set; }
 
     private ProjectDetail? project;
+    private WorkStudy? study => Editorial.Work.FirstOrDefault(item => string.Equals(item.Slug, Slug, StringComparison.OrdinalIgnoreCase));
     private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
     private bool IsArabic => Culture == "ar";
     private string InlineArrow => IsArabic ? "←" : "→";

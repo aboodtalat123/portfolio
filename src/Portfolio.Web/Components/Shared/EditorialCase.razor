@@ -1,0 +1,56 @@
+<main class="v2 page-shell v2-document">
+    <a class="v2-label" href="@(Culture == "ar" ? "/?lang=ar#work" : "/#work")">@T("Selected work", "أعمال مختارة")</a>
+    <h1>@Study.Title</h1>
+    <p class="v2-lead">@Study.Summary.In(Culture)</p>
+    <p class="v2-role">@Study.Role.In(Culture)</p>
+    <div class="project-actions">
+        @if (Study.Slug == "siteaware-ai")
+        {
+            <a class="button button-primary" href="@(Culture == "ar" ? "/pitch?lang=ar" : "/pitch")">@T("View pitch", "افتح العرض")</a>
+        }
+        @if (Study.Slug == "dr-solution")
+        {
+            <a class="button button-secondary" href="https://dr-solution.onrender.com">@T("Open project site", "افتح موقع المشروع") ↗</a>
+        }
+        @if (Study.Link is { } link)
+        {
+            <a class="button button-secondary" href="@link">@T("Source repository", "مستودع المصدر") ↗</a>
+        }
+    </div>
+    @if (Visual is { } visual)
+    {
+        <figure class="v2-case-visual">
+            <a href="@visual.Path"><img src="@visual.Path" alt="@visual.Caption.In(Culture)" width="1200" height="750" loading="lazy" /></a>
+            <figcaption>@visual.Caption.In(Culture)</figcaption>
+        </figure>
+    }
+    <section class="v2-section v2-split" id="challenge"><h2>@T("The problem", "المشكلة")</h2><p>@Study.Challenge.In(Culture)</p></section>
+    <section class="v2-section v2-split" id="engineering">
+        <h2>@T("Engineering", "الهندسة")</h2>
+        <div>
+            <p>@Study.Engineering.In(Culture)</p>
+            @if (Study.Slug == "siteaware-ai")
+            {
+                <ol class="v2-flow" aria-label="@T("Application intelligence pipeline", "مراحل ذكاء التطبيقات")">
+                    <li>@T("Authorized DOM and accessibility observations", "رصد مصرح به لبنية الواجهة وإمكانية الوصول")</li>
+                    <li>@T("Semantic page learning and application map", "التعلم الدلالي للصفحات وخريطة التطبيق")</li>
+                    <li>@T("Document retrieval and procedural reasoning", "استرجاع المستندات والاستدلال الإجرائي")</li>
+                    <li>@T("Grounded response and verified route guidance", "إجابة مدعومة بالأدلة وإرشاد إلى مسار متحقق")</li>
+                </ol>
+            }
+        </div>
+    </section>
+    <section class="v2-section v2-split" id="status"><h2>@T("Current state", "الحالة الحالية")</h2><p>@Study.Status.In(Culture)</p></section>
+    <section class="v2-section v2-split" id="stack"><h2>@T("Technology", "التقنيات")</h2><p>@Study.Stack</p></section>
+</main>
+@code {
+    [Parameter, EditorRequired] public WorkStudy Study { get; set; } = null!;
+    [Parameter, EditorRequired] public string Culture { get; set; } = "en";
+    private (string Path, LocalText Caption)? Visual => Study.Slug switch
+    {
+        "tebiha" => ("/media/projects/tebiha-sourcing.webp", new("TEBIHA sourcing interface, historical UI capture.", "واجهة التوريد في تبيها، لقطة تاريخية للواجهة.")),
+        "dr-solution" => ("/media/projects/dr-solution-library.webp", new("Dr. Solution study library and document upload, historical UI capture.", "مكتبة الدراسة ورفع المستندات في Dr. Solution، لقطة تاريخية للواجهة.")),
+        _ => null
+    };
+    private string T(string en, string ar) => Culture == "ar" ? ar : en;
+}

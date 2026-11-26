@@ -16,14 +16,14 @@ public static partial class AssistantRequestValidator
         "system",
         "work",
         "about",
-        "contact"
+        "contact", "lab", "challenge", "engineering", "status", "stack"
     };
 
     private static readonly HashSet<string> AllowedProjectSlugs = new(StringComparer.OrdinalIgnoreCase)
     {
         "reusable-site-ai",
         "dr-solution",
-        "fairaid-gaza"
+        "fairaid-gaza", "siteaware-ai", "tebiha", "level-up-pos", "wesal-mabrouk", "video-goals-extractor"
     };
 
     public static bool TryValidate(
@@ -121,6 +121,12 @@ public static partial class AssistantRequestValidator
         if (string.Equals(pathOnly, "/", StringComparison.Ordinal))
         {
             path = "/";
+            return true;
+        }
+
+        if (pathOnly is "/cv" or "/pitch" or "/privacy")
+        {
+            path = pathOnly;
             return true;
         }
 

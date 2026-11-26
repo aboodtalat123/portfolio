@@ -1,0 +1,38 @@
+@page "/cv"
+<PageTitle>@T("Technical CV", "السيرة التقنية") · TalatAI</PageTitle>
+<PortfolioHeader Culture="@Culture" />
+<main class="v2 page-shell v2-document">
+    <p class="v2-label">@T("Technical CV", "السيرة التقنية")</p>
+    <h1>@Editorial.Identity.In(Culture)</h1>
+    <p class="v2-role">@Editorial.Profession.In(Culture)</p>
+    <p class="v2-lead">@Editorial.Bio.In(Culture)</p>
+    <div class="project-actions">
+        <a class="button button-primary" href="/cv/download" download data-enhance-nav="false">@T("Download CV · PDF (English)", "تنزيل السيرة · PDF بالإنجليزية")</a>
+        <a class="button button-secondary" href="/files/Abdalrahman_Talat_Abu_Salem_CV.pdf" data-enhance-nav="false">@T("Open PDF", "افتح ملف PDF")</a>
+    </div>
+    <section class="v2-section v2-split" id="experience"><h2>@T("Experience", "الخبرة")</h2><p>@Editorial.Experience.In(Culture)</p></section>
+    <section class="v2-section v2-split" id="skills">
+        <h2>@T("Technical skills", "المهارات التقنية")</h2>
+        <dl class="v2-skills">
+            <dt>@T("Applied AI", "الذكاء الاصطناعي التطبيقي")</dt>
+            <dd>@Editorial.AppliedSkills.In(Culture)</dd>
+            <dt>@T("Application engineering", "هندسة التطبيقات")</dt>
+            <dd dir="ltr">@Editorial.ApplicationSkills</dd>
+            <dt>@T("Data and delivery", "البيانات والتسليم")</dt>
+            <dd dir="ltr">@Editorial.DataSkills</dd>
+        </dl>
+    </section>
+    <section class="v2-section"><h2>@T("Selected projects", "مشاريع مختارة")</h2>
+        @foreach (var item in Editorial.Work)
+        {
+            <article class="v2-cv-item"><h3><a href="@(Culture == "ar" ? item.Path + "?lang=ar" : item.Path)">@item.Title</a></h3><p class="v2-role">@item.Role.In(Culture)</p><p>@item.Engineering.In(Culture)</p></article>
+        }
+    </section>
+    <section class="v2-section v2-split" id="education"><h2>@T("Education & languages", "التعليم واللغات")</h2><p>@Editorial.Education.In(Culture)</p></section>
+</main>
+<PortfolioFooter Culture="@Culture" />
+@code {
+    [SupplyParameterFromQuery(Name = "lang")] public string? Language { get; set; }
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private string T(string en, string ar) => Culture == "ar" ? ar : en;
+}
