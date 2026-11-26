@@ -18,7 +18,7 @@
     {
         <section class="v2-slide" id="@($"slide-{i + 1}")">
             <h2>@Slides[i].Title.In(Culture)</h2><p>@Slides[i].Body.In(Culture)</p>
-            <nav class="v2-slide-actions" aria-label="@T("Slide controls", "التنقل بين الشرائح")">
+            <nav class="v2-slide-actions" aria-label="@T($"Slide {i + 1} controls", $"التنقل من الشريحة {i + 1}")">
                 @if (i > 0)
                 {
                     <a href="@($"{PitchPath}#slide-{i}")" data-enhance-nav="false">@T("Previous", "السابق")</a>

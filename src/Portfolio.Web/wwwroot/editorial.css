@@ -63,3 +63,4 @@ html .header-cta,.assistant-form button,.assistant-message--user{background:var(
 @media(prefers-reduced-motion:reduce){html,html body,.site-header{transition:none!important}}
 .v2-slide-actions{display:flex;gap:1.2rem;margin-top:1.4rem}.v2-slide-actions a{font-weight:650;color:var(--v2-accent);text-decoration:underline;text-underline-offset:.25em}
 .v2-skills{margin:0}.v2-skills dt{margin-top:1rem;font-weight:700}.v2-skills dt:first-child{margin-top:0}.v2-skills dd{margin:0;color:var(--v2-muted);text-align:start}.v2-skills dd[dir=ltr]{text-align:inherit}
+html .language-toggle,html .language-toggle>span{color:var(--v2-ink)}html .footer-statusbar,html .footer-statusbar span{color:var(--v2-muted);background:var(--v2-panel)}
