@@ -2,15 +2,15 @@
     const translations = {
         en: {
             launcher: "Ask AI",
-            eyebrow: "PORTFOLIO GUIDE",
+            eyebrow: "AI REPRESENTATIVE",
             title: "Ask about my work",
             close: "Close assistant",
             context: "Using this page as context",
-            noStorage: "Sent to Gemini \u00b7 not stored here",
+            noStorage: "Chat stays in this page",
             inputLabel: "Ask a question about Abd Alrahman's work",
             placeholder: "Ask about a project, skill, or service...",
             send: "Send",
-            disclaimer: "Your question is sent to Gemini. Do not include sensitive information.",
+            disclaimer: "When configured, Gemini processes questions. Avoid sensitive information.",
             welcome: "Hi \u2014 I can explain Abd Alrahman's projects, .NET work, and site-aware AI system. What would you like to know?",
             sources: "Portfolio sources",
             loading: "Reading the portfolio...",
@@ -19,9 +19,9 @@
             rateLimit: "You have reached the short usage limit. Please wait a minute and try again.",
             tooLong: "Please keep the question under 500 characters.",
             suggestions: {
-                "site-ai": "How did you integrate AI into existing websites?",
-                security: "Why is the site-aware assistant secure?",
-                dotnet: "Which project best demonstrates your .NET backend work?"
+                "site-ai": "How does SiteAware work?",
+                security: "What are the limits of SiteAware today?",
+                dotnet: "Show the technical CV"
             }
         },
         ar: {
@@ -67,7 +67,7 @@
 
         root.innerHTML =
             '<button class="assistant-launcher" type="button" data-assistant-launcher aria-controls="portfolio-assistant-panel" aria-expanded="false" title="Toggle AI assistant (Ctrl+Shift+A)">' +
-            '<span class="assistant-launcher__icon" aria-hidden="true">A</span>' +
+            '<span class="assistant-launcher__icon" aria-hidden="true"><img src="/media/portrait.webp" width="36" height="36" alt=""></span>' +
             '<span class="assistant-launcher__label" data-assistant-launcher-label>' + copy.launcher + '</span>' +
             '<i aria-hidden="true"></i></button>' +
             '<section class="assistant-panel" id="portfolio-assistant-panel" data-assistant-panel role="dialog" aria-modal="false" aria-labelledby="portfolio-assistant-title" hidden>' +
@@ -98,7 +98,7 @@
             '<p class="assistant-disclaimer" data-assistant-disclaimer>' + copy.disclaimer + '</p>' +
             '</section>';
 
-        document.body.append(root);
+        (document.getElementById("portfolio-ai-host") ?? document.body).append(root);
 
         root.openAssistant = () => {};
         root.closeAssistant = () => {};
@@ -142,7 +142,6 @@
         let activeSection = window.location.hash.replace("#", "");
         let sectionObserver = null;
         let lastFocusedElement = null;
-        let assistantProgrammaticClose = false;
 
         launcherLabel.textContent = copy.launcher;
         launcher.setAttribute("aria-label", copy.title);
@@ -165,11 +164,134 @@
             });
         });
 
+
+        const ar = language === "ar";
+        copy.welcome = ar ? "أنا ممثل عبد الرحمن بالذكاء الاصطناعي. اسأل عن مشاريعه أو سيرته التقنية." :
+            "I am Abd Alrahman's AI representative. Ask about his projects, engineering decisions, or CV.";
+        if (ar) {
+            root.querySelector("[data-assistant-eyebrow]").textContent = "ممثل بالذكاء الاصطناعي";
+            root.querySelector("[data-assistant-no-storage]").textContent = "المحادثة ضمن هذه الصفحة";
+            root.querySelector("[data-assistant-disclaimer]").textContent = "يعالج Gemini الأسئلة عند تهيئته. تجنب المعلومات الحساسة.";
+        }
+        const words = (en, arabic) => ar ? arabic : en;
+        const toolbar = document.createElement("div");
+        toolbar.className = "assistant-tools";
+        panel.querySelector(".assistant-disclaimer").before(toolbar);
+
+        function tool(label, action) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = label;
+            button.addEventListener("click", action);
+            toolbar.append(button);
+            return button;
+        }
+
+        let recognition;
+        let requestController;
+        let cancelled = false;
+        let lastQuestion = "";
+        let lastAnswer = "";
+        let lastLanguage = language;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const voiceStatus = document.createElement("span");
+        voiceStatus.setAttribute("role", "status");
+
+        function setState(state) {
+            root.dataset.assistantState = state;
+            document.querySelector("[data-open-portfolio-assistant]")?.setAttribute("data-assistant-state", state);
+        }
+
+        function stopVoice() {
+            recognition?.abort();
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            voiceStatus.textContent = "";
+            setState(pending ? "thinking" : "available");
+        }
+
+        if (SpeechRecognition) {
+            tool(words("Microphone", "الميكروفون"), () => {
+                if (pending || recognition) return;
+                if (!window.confirm(words("Allow your browser speech service to process your microphone input?", "هل تسمح لخدمة التعرف على الكلام في متصفحك بمعالجة صوت الميكروفون؟"))) return;
+                const engine = new SpeechRecognition();
+                engine.lang = ar ? "ar-PS" : "en-US";
+                engine.maxAlternatives = 1;
+                engine.onresult = (event) => {
+                    input.value = event.results[0][0].transcript.slice(0, 500);
+                    input.focus();
+                };
+                engine.onerror = (event) => {
+                    if (event.error === "aborted") return;
+                    setState("error");
+                    voiceStatus.textContent = words("Microphone unavailable. You can type your question.", "الميكروفون غير متاح. يمكنك كتابة سؤالك.");
+                };
+                engine.onend = () => {
+                    recognition = undefined;
+                    if (root.dataset.assistantState === "listening") {
+                        voiceStatus.textContent = "";
+                        setState("available");
+                    }
+                };
+                try {
+                    engine.start();
+                    recognition = engine;
+                    voiceStatus.textContent = words("Listening…", "أستمع الآن…");
+                    setState("listening");
+                } catch {
+                    engine.onerror({ error: "unavailable" });
+                }
+            });
+        }
+
+        if ("speechSynthesis" in window && "SpeechSynthesisUtterance" in window) {
+            tool(words("Read reply", "اقرأ الرد"), () => {
+                if (!lastAnswer || pending) return;
+                stopVoice();
+                const utterance = new SpeechSynthesisUtterance(lastAnswer);
+                utterance.lang = lastLanguage === "ar" ? "ar" : "en-US";
+                utterance.onend = () => setState("completed");
+                utterance.onerror = () => setState("available");
+                setState("speaking");
+                window.speechSynthesis.speak(utterance);
+            });
+        }
+
+        if (SpeechRecognition || "speechSynthesis" in window) {
+            tool(words("Stop voice", "أوقف الصوت"), stopVoice);
+        }
+
+        const cancelButton = tool(words("Cancel answer", "ألغِ الإجابة"), () => {
+            cancelled = true;
+            requestController?.abort();
+        });
+        cancelButton.hidden = true;
+        const retryButton = tool(words("Retry", "أعد المحاولة"), () => {
+            if (!lastQuestion || pending) return;
+            input.value = lastQuestion;
+            submitQuestion();
+        });
+        retryButton.hidden = true;
+        tool(words("Clear chat", "امسح المحادثة"), () => {
+            if (pending) return;
+            stopVoice();
+            conversation.length = 0;
+            lastAnswer = "";
+            lastQuestion = "";
+            retryButton.hidden = true;
+            messages.replaceChildren();
+            suggestions.hidden = false;
+            addMessage("assistant", copy.welcome);
+            input.focus();
+        });
+        toolbar.append(voiceStatus);
+
         addMessage("assistant", copy.welcome);
 
         function openPanel() {
             if (root.hidden) return;
             lastFocusedElement = document.activeElement;
+            document.querySelector("[data-open-portfolio-assistant]")?.setAttribute("aria-expanded", "true");
+            if (!pending) setState("available");
             panel.hidden = false;
             launcher.setAttribute("aria-expanded", "true");
             root.classList.add("is-open");
@@ -177,7 +299,8 @@
         }
 
         function closePanel({ restoreFocus = true } = {}) {
-            assistantProgrammaticClose = true;
+            stopVoice();
+            document.querySelector("[data-open-portfolio-assistant]")?.setAttribute("aria-expanded", "false");
             panel.hidden = true;
             launcher.setAttribute("aria-expanded", "false");
             root.classList.remove("is-open");
@@ -187,7 +310,6 @@
                     : launcher;
                 focusTarget.focus();
             }
-            window.setTimeout(() => { assistantProgrammaticClose = false; }, 100);
         }
 
         function togglePanel() {
@@ -195,7 +317,7 @@
             else closePanel();
         }
 
-        function addMessage(role, text, sources = []) {
+        function addMessage(role, text, sources = [], navigation = null) {
             const message = document.createElement("article");
             message.className = "assistant-message assistant-message--" + role;
             message.setAttribute("dir", "auto");
@@ -207,7 +329,11 @@
             const trustedSources = sources.filter((source) => {
                 if (!source || !source.url || !source.title) return false;
                 try {
-                    return new URL(source.url, window.location.origin).origin === window.location.origin;
+                    const target = new URL(source.url, window.location.origin);
+                    const paths = new Set(["/", "/cv", "/pitch", "/work/siteaware-ai", "/work/tebiha", "/work/dr-solution", "/work/level-up-pos", "/work/wesal-mabrouk", "/work/fairaid-gaza"]);
+                    const anchors = new Set(["", "#work", "#contact", "#lab", "#challenge", "#engineering", "#status", "#stack"]);
+                    return target.origin === window.location.origin && paths.has(target.pathname) &&
+                        anchors.has(target.hash) && ["", "?lang=ar"].includes(target.search);
                 } catch {
                     return false;
                 }
@@ -232,6 +358,25 @@
                 message.append(sourceGroup);
             }
 
+            if (navigation && typeof navigation.label === "string" && navigation.label.length <= 100) {
+                const targets = {
+                    openCv: ["/cv"],
+                    openPitch: ["/pitch"],
+                    openProject: ["/work/siteaware-ai", "/work/tebiha", "/work/dr-solution", "/work/level-up-pos", "/work/wesal-mabrouk", "/work/fairaid-gaza"],
+                    scrollToSection: ["/#work", "/#contact", "/#lab", "/#about"]
+                };
+                const destination = navigation.target;
+                if (typeof destination === "string" && Object.hasOwn(targets, navigation.kind) &&
+                    targets[navigation.kind].some((path) => destination === path ||
+                        destination === path.replace(/(#.*)?$/, "?lang=ar$1"))) {
+                    const link = document.createElement("a");
+                    link.className = "assistant-action";
+                    link.href = destination;
+                    link.textContent = navigation.label;
+                    link.addEventListener("click", () => closePanel({ restoreFocus: false }));
+                    message.append(link);
+                }
+            }
             messages.append(message);
             messages.scrollTop = messages.scrollHeight;
             return message;
@@ -265,7 +410,14 @@
                 return;
             }
 
+            stopVoice();
             pending = true;
+            lastQuestion = question;
+            lastLanguage = detectQuestionLanguage(question) ?? (/\p{Script=Latin}/u.test(question) ? "en" : language);
+            cancelled = false;
+            cancelButton.hidden = false;
+            retryButton.hidden = true;
+            setState("thinking");
             input.value = "";
             input.disabled = true;
             sendButton.disabled = true;
@@ -274,6 +426,7 @@
             const loadingMessage = addLoadingMessage();
             const priorHistory = conversation.slice(-6);
             const controller = new AbortController();
+            requestController = controller;
             const timeout = window.setTimeout(() => controller.abort(), 30000);
 
             try {
@@ -282,25 +435,19 @@
                     credentials: "same-origin",
                     headers: {
                         "Content-Type": "application/json",
-                        "Accept": "application/json"
+                        "Accept": "application/x-ndjson"
                     },
                     body: JSON.stringify({
                         question,
-                        language: detectQuestionLanguage(question) ?? language,
+                        language: lastLanguage,
                         path: window.location.pathname,
                         section: activeSection,
-                        pageContext: readCurrentPageContext(),
                         history: priorHistory
                     }),
                     signal: controller.signal
                 });
 
-                let payload = {};
-                try {
-                    payload = await response.json();
-                } catch {
-                    payload = {};
-                }
+                const payload = response.ok ? await readAssistantReply(response) : {};
 
                 loadingMessage.remove();
 
@@ -314,25 +461,45 @@
                     return;
                 }
 
+                if (payload.unavailable) {
+                    retryButton.hidden = false;
+                    setState("error");
+                    addMessage("assistant", copy.unavailable);
+                    return;
+                }
+
                 if (!response.ok || typeof payload.answer !== "string") {
+                    retryButton.hidden = false;
+                    setState("error");
                     addMessage("assistant", copy.error);
                     return;
                 }
 
-                addMessage("assistant", payload.answer, Array.isArray(payload.sources) ? payload.sources : []);
-                conversation.push(
-                    { role: "user", content: question },
-                    { role: "assistant", content: payload.answer }
-                );
+                lastAnswer = payload.answer;
+                const display = payload.confidence === "reference"
+                    ? words("Portfolio excerpt · AI unavailable", "مقتطف من الملف · الذكاء الاصطناعي غير متاح") + "\n\n" + payload.answer
+                    : payload.answer;
+                addMessage("assistant", display, Array.isArray(payload.sources) ? payload.sources : [], payload.navigation);
+                if (payload.confidence !== "navigation") {
+                    conversation.push(
+                        { role: "user", content: question },
+                        { role: "assistant", content: payload.answer }
+                    );
+                    if (conversation.length > 6) conversation.splice(0, conversation.length - 6);
+                }
             } catch {
                 loadingMessage.remove();
-                addMessage("assistant", copy.error);
+                setState(cancelled ? "available" : "error");
+                retryButton.hidden = false;
+                addMessage("assistant", cancelled ? words("Answer cancelled.", "أُلغيت الإجابة.") : copy.error);
             } finally {
                 window.clearTimeout(timeout);
                 pending = false;
+                requestController = undefined;
+                cancelButton.hidden = true;
                 input.disabled = false;
                 sendButton.disabled = false;
-                input.focus();
+                if (!panel.hidden) input.focus();
             }
         }
 
@@ -356,27 +523,8 @@
             }
         });
 
-        function readCurrentPageContext() {
-            const currentSection = activeSection
-                ? document.getElementById(activeSection)
-                : null;
-            const contextRoot = currentSection ?? document.querySelector("main");
-            if (!contextRoot) return "";
-
-            return (contextRoot.innerText || "")
-                .replace(/\s+/g, " ")
-                .trim()
-                .slice(0, 5000);
-        }
-
         function refreshAssistantContext() {
             activeSection = window.location.hash.replace("#", "");
-            const isSupportedPath = window.location.pathname !== "/work/video-goals-extractor";
-            root.hidden = !isSupportedPath;
-            if (!isSupportedPath && !panel.hidden) {
-                closePanel({ restoreFocus: false });
-            }
-
             sectionObserver?.disconnect();
             sectionObserver = null;
             const trackedSections = Array.from(document.querySelectorAll("main section[id]"))
@@ -400,6 +548,33 @@
         root.refreshAssistantContext = refreshAssistantContext;
         disposeActiveContext = () => sectionObserver?.disconnect();
         refreshAssistantContext();
+    }
+
+    async function readAssistantReply(response) {
+        if (!response.headers.get("content-type")?.startsWith("application/x-ndjson")) {
+            return response.json();
+        }
+
+        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+        let buffer = "";
+        try {
+            for (;;) {
+                const { value, done } = await reader.read();
+                if (done) throw new Error("Assistant stream ended early");
+                buffer += value;
+                if (buffer.length > 24_000) throw new Error("Assistant response exceeded its limit");
+                let end;
+                while ((end = buffer.indexOf("\n")) >= 0) {
+                    const event = JSON.parse(buffer.slice(0, end));
+                    buffer = buffer.slice(end + 1);
+                    if (event.stage === "complete" && event.reply) return event.reply;
+                    if (event.stage === "unavailable") return { unavailable: true };
+                }
+            }
+        } finally {
+            await reader.cancel().catch(() => {});
+            reader.releaseLock();
+        }
     }
 
     document.addEventListener("click", (event) => {

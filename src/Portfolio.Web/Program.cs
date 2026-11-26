@@ -1,3 +1,4 @@
+using Portfolio.Web;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -19,7 +20,6 @@ var connectionString = builder.Configuration.GetConnectionString("Portfolio")
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddMemoryCache();
 builder.Services.AddPortfolioInfrastructure(connectionString);
 builder.Services.Configure<PortfolioAssistantOptions>(options =>
 {
@@ -36,6 +36,7 @@ builder.Services.Configure<PortfolioAssistantOptions>(options =>
         model = builder.Configuration["GEN_MODEL"];
     }
     options.Model = model ?? PortfolioAssistantOptions.DefaultModel;
+    options.DailyRequestLimit = Math.Clamp(builder.Configuration.GetValue("PortfolioAssistant:DailyRequestLimit", 150), 0, 1000);
 });
 builder.Services.AddScoped<IPortfolioKnowledgeService, PortfolioKnowledgeService>();
 builder.Services.AddHttpClient<IPortfolioAssistantService, GeminiPortfolioAssistant>(client =>
@@ -46,6 +47,15 @@ builder.Services.AddHttpClient<IPortfolioAssistantService, GeminiPortfolioAssist
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retry))
+        {
+            context.HttpContext.Response.Headers.RetryAfter =
+                Math.Ceiling(retry.TotalSeconds).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+        await context.HttpContext.Response.WriteAsJsonAsync(new { error = "rate_limited" }, cancellationToken);
+    };
     options.AddPolicy(
         "portfolio-assistant",
         httpContext => RateLimitPartition.GetFixedWindowLimiter(
@@ -79,6 +89,11 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapPortfolioAssistantEndpoints();
+app.MapGet("/cv/download", (IWebHostEnvironment environment) =>
+{
+    return Results.File(Path.Combine(environment.WebRootPath, "files", "Abdalrahman_Talat_Abu_Salem_CV.pdf"),
+        "application/pdf", fileDownloadName: "Abd_Alrahman_Talat_Abu_Salem_Technical_CV.pdf", enableRangeProcessing: true);
+});
 
 app.MapGet("/api/health", (IOptions<PortfolioAssistantOptions> assistantOptions) => Results.Ok(new
 {
@@ -90,9 +105,9 @@ app.MapGet("/api/health", (IOptions<PortfolioAssistantOptions> assistantOptions)
         : "ready"
 }));
 
-app.MapGet("/robots.txt", (HttpRequest request) =>
+app.MapGet("/robots.txt", () =>
 {
-    var origin = GetPublicOrigin(request);
+    const string origin = Editorial.PublicOrigin;
     var robots = $"""
         User-agent: *
         Allow: /
@@ -104,19 +119,16 @@ app.MapGet("/robots.txt", (HttpRequest request) =>
 });
 
 app.MapGet("/sitemap.xml", async (
-    HttpRequest request,
     IProjectRepository projects,
     CancellationToken cancellationToken) =>
 {
-    var origin = GetPublicOrigin(request);
-    var lastModified = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
+    const string origin = Editorial.PublicOrigin;
     var publishedProjects = await projects.GetPublishedAsync("en", cancellationToken);
     var urls = new List<string>
     {
         $"""
           <url>
             <loc>{origin}/</loc>
-            <lastmod>{lastModified}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>1.0</priority>
           </url>
@@ -124,17 +136,19 @@ app.MapGet("/sitemap.xml", async (
         $"""
           <url>
             <loc>{origin}/?lang=ar</loc>
-            <lastmod>{lastModified}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.9</priority>
           </url>
         """
     };
 
-    urls.AddRange(publishedProjects.Select(project => $"""
+    var paths = publishedProjects.Select(project => $"/work/{project.Slug}")
+        .Concat(Editorial.Work.Select(project => project.Path))
+        .Concat(["/cv", "/pitch", "/privacy"])
+        .Distinct(StringComparer.Ordinal);
+    urls.AddRange(paths.Select(path => $"""
           <url>
-            <loc>{origin}/work/{project.Slug}</loc>
-            <lastmod>{lastModified}</lastmod>
+            <loc>{origin}{path}</loc>
             <changefreq>monthly</changefreq>
             <priority>0.8</priority>
           </url>
@@ -178,30 +192,5 @@ await using (var scope = app.Services.CreateAsyncScope())
 
 app.Run();
 
-static string GetPublicOrigin(HttpRequest request)
-{
-    var forwardedScheme = request.Headers["X-Forwarded-Proto"]
-        .ToString()
-        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        .FirstOrDefault();
-
-    var scheme = forwardedScheme is not null
-        && (forwardedScheme.Equals("https", StringComparison.OrdinalIgnoreCase)
-            || forwardedScheme.Equals("http", StringComparison.OrdinalIgnoreCase))
-            ? forwardedScheme.ToLowerInvariant()
-            : request.Scheme;
-
-    return $"{scheme}://{request.Host}";
-}
-
-static string GetRateLimitPartitionKey(HttpContext context)
-{
-    var forwardedAddress = context.Request.Headers["X-Forwarded-For"]
-        .ToString()
-        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        .FirstOrDefault();
-
-    return forwardedAddress
-        ?? context.Connection.RemoteIpAddress?.ToString()
-        ?? "unknown";
-}
+static string GetRateLimitPartitionKey(HttpContext context) =>
+    context.Connection.RemoteIpAddress?.ToString() ?? "unknown";

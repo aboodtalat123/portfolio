@@ -1,8 +1,3 @@
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Portfolio.Infrastructure.Persistence;
-using Portfolio.Infrastructure.Repositories;
 using Portfolio.Web.Assistant;
 
 namespace Portfolio.Tests;
@@ -12,7 +7,7 @@ public sealed class PortfolioAssistantTests
     [Theory]
     [InlineData("https://example.com/work/dr-solution")]
     [InlineData("//example.com/work/dr-solution")]
-    [InlineData("/work/video-goals-extractor")]
+    [InlineData("/work/unpublished-video")]
     [InlineData("/admin")]
     public void RequestValidator_RejectsExternalAndUnpublishedPaths(string path)
     {
@@ -65,9 +60,7 @@ public sealed class PortfolioAssistantTests
     [Fact]
     public async Task KnowledgeService_PrioritizesCurrentArabicProjectAndExcludesVideoLab()
     {
-        await using var fixture = await AssistantDatabaseFixture.CreateAsync();
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new PortfolioKnowledgeService(fixture.Repository, cache);
+        var service = new PortfolioKnowledgeService();
 
         var context = await service.GetContextAsync(
             "اشرح المشروع الموجود في هذه الصفحة",
@@ -76,7 +69,7 @@ public sealed class PortfolioAssistantTests
             string.Empty);
 
         Assert.Equal("ar", context.Language);
-        Assert.Equal("dr-solution", context.Documents[0].SourceId);
+        Assert.Equal("dr-solution-overview", context.Documents[0].SourceId);
         Assert.Contains("?lang=ar", context.Documents[0].Url);
         Assert.DoesNotContain(
             context.Documents,
@@ -84,48 +77,18 @@ public sealed class PortfolioAssistantTests
                 || document.Content.Contains("Video Goals Extractor", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
-    public async Task KnowledgeService_WorkSectionUsesOnlyThreeSelectedProjects()
+    [Theory]
+    [InlineData("How does SiteAware work?", "siteaware-ai-engineering")]
+    [InlineData("What is TEBIHA?", "tebiha-overview")]
+    [InlineData("Dr. Solution stack", "dr-solution-stack")]
+    [InlineData("Wesal production status", "wesal-mabrouk-status")]
+    [InlineData("FairAid problem", "fairaid-gaza-challenge")]
+    [InlineData("Show my CV", "profile")]
+    public async Task KnowledgeService_RanksCanonicalSources(string question, string sourceId)
     {
-        await using var fixture = await AssistantDatabaseFixture.CreateAsync();
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new PortfolioKnowledgeService(fixture.Repository, cache);
-
-        var context = await service.GetContextAsync(
-            "What are the main projects?",
-            "en",
-            "/",
-            "work");
-
-        var sourceIds = context.Documents.Select(document => document.SourceId).ToHashSet();
-        Assert.Contains("site-ai", sourceIds);
-        Assert.Contains("dr-solution", sourceIds);
-        Assert.Contains("fairaid", sourceIds);
-        Assert.DoesNotContain("video-goals-extractor", sourceIds);
-    }
-
-    private sealed class AssistantDatabaseFixture(
-        SqliteConnection connection,
-        PortfolioDbContext dbContext) : IAsyncDisposable
-    {
-        public ProjectRepository Repository { get; } = new(dbContext);
-
-        public static async Task<AssistantDatabaseFixture> CreateAsync()
-        {
-            var connection = new SqliteConnection("Data Source=:memory:");
-            await connection.OpenAsync();
-            var options = new DbContextOptionsBuilder<PortfolioDbContext>()
-                .UseSqlite(connection)
-                .Options;
-            var dbContext = new PortfolioDbContext(options);
-            await PortfolioDatabase.InitializeAsync(dbContext);
-            return new AssistantDatabaseFixture(connection, dbContext);
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            await dbContext.DisposeAsync();
-            await connection.DisposeAsync();
-        }
+        var service = new PortfolioKnowledgeService();
+        var context = await service.GetContextAsync(question, "en", "/", "");
+        Assert.Equal(sourceId, context.Documents[0].SourceId);
+        Assert.All(context.Documents, item => Assert.StartsWith("/", item.Url));
     }
 }

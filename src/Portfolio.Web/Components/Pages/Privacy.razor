@@ -1,0 +1,14 @@
+@page "/privacy"
+<PageTitle>@T("Privacy", "الخصوصية") · TalatAI</PageTitle>
+<PortfolioHeader Culture="@Culture" />
+<main class="v2 page-shell v2-document">
+    <h1>@T("Privacy", "الخصوصية")</h1>
+    <p>@T("The assistant keeps its conversation in the open page. When a model provider is configured, the question and recent conversation context are sent to Gemini to generate an answer. Avoid entering sensitive information.", "يحتفظ المساعد بالمحادثة في الصفحة المفتوحة. عند تهيئة مزود النموذج، يُرسل السؤال والسياق الحديث إلى Gemini لتوليد الإجابة. تجنب إدخال معلومات حساسة.")</p>
+    <p>@T("Voice features are optional. Your browser controls microphone permissions and may use its own speech service. The portfolio does not store audio. The site stores display preferences on your device.", "ميزات الصوت اختيارية. يتحكم متصفحك بإذن الميكروفون وقد يستخدم خدمة التعرف الخاصة به. لا يخزن الموقع الصوت، ويحفظ تفضيلات العرض على جهازك.")</p>
+</main>
+<PortfolioFooter Culture="@Culture" />
+@code {
+    [SupplyParameterFromQuery(Name = "lang")] public string? Language { get; set; }
+    private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
+    private string T(string en, string ar) => Culture == "ar" ? ar : en;
+}

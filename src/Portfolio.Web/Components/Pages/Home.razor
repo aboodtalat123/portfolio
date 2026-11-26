@@ -1,451 +1,77 @@
 @page "/"
-@inject IProjectRepository ProjectRepository
-@inject NavigationManager Navigation
-
-<PageTitle>@PageTitleText</PageTitle>
-<HeadContent>
-    <meta name="description" content="@MetaDescription" />
-    <meta name="keywords" content="@MetaKeywords" />
-    <meta name="author" content="ABD ALRAHMAN TALAT ABUSALEM" />
-    <link rel="canonical" href="@CanonicalUrl" />
-    <link rel="alternate" hreflang="en" href="@EnglishUrl" />
-    <link rel="alternate" hreflang="ar" href="@ArabicUrl" />
-    <link rel="alternate" hreflang="x-default" href="@EnglishUrl" />
-    <meta property="og:title" content="@PageTitleText" />
-    <meta property="og:description" content="@MetaDescription" />
-    <meta property="og:url" content="@CanonicalUrl" />
-    <meta property="og:site_name" content="ABD ALRAHMAN TALAT ABUSALEM Portfolio" />
-    <meta property="og:locale" content="@(IsArabic ? "ar_PS" : "en_US")" />
-    <script type="application/ld+json">@((MarkupString)JsonLd)</script>
-</HeadContent>
-
-<div class="site-shell">
-    <PortfolioHeader Culture="@Culture" />
-
-    <main id="top">
-        <section class="hero identity-hero page-shell" aria-labelledby="hero-title">
-            <div class="hero-copy">
-                <p class="eyebrow"><span></span> @T(".NET BACKEND · APPLIED AI · FULL-STACK DELIVERY", "BACKEND .NET · ذكاء اصطناعي تطبيقي · تطوير متكامل")</p>
-                <h1 id="hero-title">@T("ABD ALRAHMAN TALAT", "عبد الرحمن طلعت")<br /><em>@T("ABUSALEM.", "أبو سالم")</em></h1>
-                <p class="hero-position">@T(".NET Backend & Applied AI Engineer", "مهندس Backend بـ .NET ومطور حلول ذكاء اصطناعي تطبيقي")</p>
-                <p class="hero-lead">
-                    @T(
-                        "I design and ship secure web products from architecture and data modeling to interface, testing, deployment, and practical AI integration. My strongest work turns complex systems into clear, reliable experiences people can use.",
-                        "أصمم وأبني منتجات ويب آمنة من المعمارية ونمذجة البيانات إلى الواجهة والاختبار والنشر ودمج الذكاء الاصطناعي عمليًا. أفضل أعمالي تحوّل الأنظمة المعقدة إلى تجارب واضحة وموثوقة يستطيع الناس استخدامها.")
-                </p>
-                <div class="hero-actions">
-                    <a class="button button-primary" href="#system">@T("Explore the flagship system", "استكشف النظام الرئيسي") <span aria-hidden="true">↓</span></a>
-                    <a class="button button-secondary" href="/files/Abdalrahman_Talat_Abu_Salem_CV.pdf" target="_blank" rel="noreferrer">@T("Open CV", "فتح السيرة الذاتية") <span aria-hidden="true">↗</span></a>
-                </div>
-                <div class="hero-profile-links" aria-label="@T("Professional profiles", "الحسابات المهنية")">
-                    <a href="https://github.com/aboodtalat123" target="_blank" rel="noreferrer">GitHub ↗</a>
-                    <a href="https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
-                    <a href="mailto:aboodtalat123@gmail.com">@T("Email", "البريد") ↗</a>
-                </div>
-                <ul class="hero-proof" aria-label="@T("Profile summary", "ملخص الملف المهني")">
-                    <li><b>@T("Gaza, Palestine", "غزة، فلسطين")</b><span>@T("Open to remote opportunities", "متاح لفرص العمل عن بُعد")</span></li>
-                    <li><b>@T("B.IT · Sep 2026", "بكالوريوس IT · 2026")</b><span>@T("Mobile Computing & Smart Devices", "الحوسبة المتنقلة والأجهزة الذكية")</span></li>
-                    <li><b>@T("Arabic / English", "العربية / الإنجليزية")</b><span>@T("Arabic-first and bilingual delivery", "تنفيذ عربي وثنائي اللغة")</span></li>
-                </ul>
+<PageTitle>@Editorial.Identity.In(Culture) · TalatAI</PageTitle>
+<PortfolioHeader Culture="@Culture" />
+<main id="top" class="v2">
+    <section class="page-shell v2-hero">
+        <div>
+            <p class="v2-label">TalatAI <span> / </span> @T("Engineering portfolio", "ملف الأعمال الهندسية")</p>
+            <h1>@Editorial.Identity.In(Culture)</h1>
+            <p class="v2-role">@Editorial.Profession.In(Culture)</p>
+            <p class="v2-founder">@T("Founder of TalatAI / SiteAware AI", "مؤسس TalatAI / SiteAware AI")</p>
+            <p class="v2-lead">@Editorial.Bio.In(Culture)</p>
+            <div class="project-actions"><a class="button button-primary" href="@(Url("/") + "#work")">@T("Explore the work", "استكشف الأعمال")</a><a class="button button-secondary" href="@Url("/cv")">@T("View CV", "السيرة الذاتية")</a></div>
+        </div>
+        <button type="button" class="v2-portrait" data-open-portfolio-assistant aria-controls="portfolio-assistant-panel" aria-expanded="false">
+            <img src="/media/portrait.webp" alt="" width="820" height="779" fetchpriority="high" />
+            <span><i aria-hidden="true"></i> @T("Ask my AI representative", "اسأل ممثلي بالذكاء الاصطناعي") <b aria-hidden="true">↗</b></span>
+        </button>
+    </section>
+    <section class="v2-feature" id="system">
+        <div class="page-shell v2-feature-inner">
+            <div>
+                <p class="v2-label">@T("Flagship project", "المشروع الرئيسي")</p>
+                <h2>SiteAware AI</h2>
+                <p class="v2-lead">@Editorial.Work[0].Summary.In(Culture)</p>
+                <div class="project-actions"><a class="button button-primary" href="@Url(Editorial.Work[0].Path)">@T("Read case study", "اقرأ دراسة الحالة")</a><a class="button button-secondary" href="@Url("/pitch")">@T("Open pitch", "افتح العرض")</a></div>
             </div>
-
-            <aside class="identity-card" aria-label="@T("Professional profile", "الملف المهني")">
-                <div class="identity-card__titlebar">
-                    <span>@T("PROFESSIONAL PROFILE", "الملف المهني")</span>
-                    <small>2026</small>
-                </div>
-                <div class="identity-card__person">
-                    <img src="/media/abdalrahman-profile.jpg" alt="@T("ABD ALRAHMAN TALAT ABUSALEM", "عبد الرحمن طلعت أبو سالم")" />
-                    <div>
-                        <span class="identity-status"><i></i> @T("Available for selected work", "متاح لمشاريع مختارة")</span>
-                        <h2>@T("Backend-first.", "عمق في الـ Backend.")<br />@T("Product-minded.", "تفكير بالمنتج.")</h2>
-                        <p>@T("C#/.NET engineer building practical AI systems and complete web products.", "مهندس C#/.NET يبني أنظمة ذكاء عملية ومنتجات ويب متكاملة.")</p>
-                        <p class="identity-alias">@T("Also known online as aboodtalat and aboodtalat123.", "أُعرف رقميًا أيضًا باسم aboodtalat و aboodtalat123.")</p>
-                    </div>
-                </div>
-                <dl class="identity-card__facts">
-                    <div><dt>@T("Primary stack", "التقنيات الأساسية")</dt><dd>C# · ASP.NET Core · Blazor · EF Core</dd></div>
-                    <div><dt>@T("Applied AI", "الذكاء التطبيقي")</dt><dd>FastAPI · Gemini · RAG · ChromaDB</dd></div>
-                    <div><dt>@T("Data", "البيانات")</dt><dd>SQL Server · SQLite · @T("secure workflows", "مسارات آمنة")</dd></div>
-                    <div><dt>@T("Delivery", "التسليم")</dt><dd>Docker · Render · Git/GitHub · @T("testing", "اختبارات")</dd></div>
-                </dl>
-                <div class="identity-card__focus">
-                    <span>@T("CURRENT FOCUS", "التركيز الحالي")</span>
-                    <strong>@T("Safe AI for existing websites", "ذكاء آمن للمواقع القائمة")</strong>
-                    <p>@T("Useful site intelligence without handing the assistant direct access to the website database.", "ذكاء يفهم الموقع ويفيد مستخدمه دون منحه وصولًا مباشرًا إلى قاعدة البيانات.")</p>
-                </div>
-                <div class="identity-card__statusbar"><span><i></i> @T("production-minded", "جاهز للإنتاج")</span><span>C# · Python · SQL</span></div>
-            </aside>
-        </section>
-
-        <section class="capability-strip" aria-label="@T("Core capabilities", "القدرات الأساسية")">
-            <div class="page-shell">
-                <span>ASP.NET CORE</span><i></i><span>BLAZOR</span><i></i><span>EF CORE</span><i></i>
-                <span>@T("SECURE WORKFLOWS", "مسارات آمنة")</span><i></i><span>RAG &amp; EMBEDDINGS</span><i></i><span>@T("DOCKER DELIVERY", "نشر عبر DOCKER")</span>
-            </div>
-        </section>
-
-        <section class="system-section flagship-section section-block" id="system" aria-labelledby="system-title">
-            <div class="page-shell">
-                <header class="section-heading flagship-heading">
-                    <div>
-                        <p class="section-index">@T("01 / CORE INNOVATION", "01 / الابتكار الأساسي")</p>
-                        <h2 id="system-title">@T("A safe AI layer", "طبقة ذكاء اصطناعي آمنة")<br /><em>@T("designed for existing websites.", "مصممة للمواقع القائمة.")</em></h2>
-                    </div>
-                    <p>@T("I designed and built a reusable system that adds a knowledgeable assistant to an existing website without requiring direct access to its database, passwords, or private backend.", "صممت وطورت نظامًا قابلًا لإعادة الاستخدام يضيف مساعدًا ذكيًا إلى أي موقع قائم، دون الحاجة إلى الوصول المباشر لقاعدة بياناته أو كلمات المرور أو الخادم الداخلي الخاص به.")</p>
-                </header>
-
-                <div class="flagship-summary">
-                    <article class="flagship-claim">
-                        <span class="card-label">@T("THE PRODUCT IDEA", "فكرة المنتج")</span>
-                        <h3>@T("The assistant understands both the whole website and the page the user is viewing now.", "مساعد يفهم الموقع كاملًا والصفحة التي يشاهدها المستخدم الآن.")</h3>
-                        <p>
-                            @T(
-                                "A site adapter discovers allowed routes and builds a sanitized knowledge base. At question time, the assistant also reads the visible page, gives that live context priority, retrieves supporting evidence, answers with confidence, and can open the exact source page for the user.",
-                                "يكتشف محول الموقع المسارات المسموحة ويبني قاعدة معرفة منقحة. وعند السؤال يقرأ المساعد الصفحة الظاهرة، ويعطي سياقها الحي الأولوية، ويسترجع الأدلة الداعمة، ثم يجيب بدرجة ثقة ويستطيع فتح صفحة المصدر الدقيقة للمستخدم.")
-                        </p>
-                        <div class="project-actions">
-                            <a class="button button-primary" href="@LocalUrl("/work/reusable-site-ai")">@T("Read the full case study", "اقرأ دراسة الحالة كاملة") <span aria-hidden="true">@InlineArrow</span></a>
-                            <button class="button button-secondary" type="button" data-open-portfolio-assistant>@T("Try the live assistant", "جرّب المساعد الآن") <span aria-hidden="true">↗</span></button>
-                            <a class="button button-secondary" href="https://github.com/aboodtalat123" target="_blank" rel="noreferrer">@T("View GitHub profile", "عرض حساب GitHub") <span aria-hidden="true">↗</span></a>
-                        </div>
-                    </article>
-
-                    <div class="knowledge-grid" aria-label="@T("Assistant knowledge sources", "مصادر معرفة المساعد")">
-                        <article><span>01</span><strong>@T("Site-wide knowledge", "معرفة الموقع كاملة")</strong><p>@T("Routes, page titles, links, controls, and approved content across the website.", "المسارات وعناوين الصفحات والروابط وعناصر التحكم والمحتوى المسموح في الموقع.")</p></article>
-                        <article><span>02</span><strong>@T("Live current page", "الصفحة الحالية مباشرة")</strong><p>@T("The page visible to the signed-in user is read again at the moment of the question.", "تُقرأ الصفحة الظاهرة للمستخدم المسجل لحظة طرح السؤال.")</p></article>
-                        <article><span>03</span><strong>@T("Grounded retrieval", "استرجاع موثّق")</strong><p>@T("Current context is combined with matching evidence from the isolated RAG workspace.", "يُدمج السياق الحالي مع الأدلة المطابقة من مساحة RAG المعزولة.")</p></article>
-                        <article><span>04</span><strong>@T("Exact source action", "انتقال للمصدر الدقيق")</strong><p>@T("Answers cite recognizable pages and can navigate to the exact canonical route.", "توثّق الإجابات صفحات واضحة ويمكنها الانتقال إلى المسار الرسمي الدقيق.")</p></article>
-                    </div>
-                </div>
-
-                <div class="site-evidence-grid" aria-label="@T("Working website integrations", "نماذج دمج تعمل فعليًا")">
-                    <article class="site-evidence-card">
-                        <div class="real-screen"><img src="/media/projects/university-ai-assistant.png" alt="@T("University portal with the integrated site-aware AI assistant open", "بوابة الجامعة مع مساعد الذكاء المدرك للموقع")" loading="lazy" /></div>
-                        <div class="site-evidence-card__copy">
-                            <span>@T("PROVEN ADAPTER 01 · ORACLE APEX", "نموذج مثبت 01 · ORACLE APEX")</span>
-                            <h3>@T("University Portal", "بوابة الجامعة")</h3>
-                            <p>@T("Reads the authenticated page, understands student-visible information, answers with the current page first, and exposes an exact source-page action.", "يقرأ الصفحة بعد تسجيل الدخول، ويفهم المعلومات التي يراها الطالب، ويعطي الصفحة الحالية أولوية في الإجابة، ويعرض زرًا للمصدر الدقيق.")</p>
-                            <span class="source-availability"><i></i> @T("Private implementation · access available on request", "تنفيذ خاص · المعاينة متاحة عند الطلب")</span>
-                        </div>
-                    </article>
-                    <article class="site-evidence-card">
-                        <div class="real-screen"><img src="/media/projects/taqat-ai-assistant.png" alt="@T("Taqat Academy with the reusable AI assistant integrated", "أكاديمية طاقات مع المساعد القابل لإعادة الاستخدام")" loading="lazy" /></div>
-                        <div class="site-evidence-card__copy">
-                            <span>@T("PROVEN ADAPTER 02 · LEARNING PLATFORM", "نموذج مثبت 02 · منصة تعليمية")</span>
-                            <h3>@T("Taqat Academy", "أكاديمية طاقات")</h3>
-                            <p>@T("The same isolated core was adapted to a different design and content model, demonstrating that the architecture is reusable rather than tied to one portal.", "تم تكييف النواة المعزولة نفسها مع تصميم ونموذج محتوى مختلفين، لإثبات أن المعمارية قابلة لإعادة الاستخدام وليست مرتبطة ببوابة واحدة.")</p>
-                            <span class="source-availability"><i></i> @T("Private implementation · access available on request", "تنفيذ خاص · المعاينة متاحة عند الطلب")</span>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="system-layout flagship-architecture">
-                    <div class="architecture-panel">
-                        <div class="panel-tabbar"><span class="is-active">@T("SYSTEM ARCHITECTURE", "معمارية النظام")</span><span>@T("LIVE CONTEXT FLOW", "مسار السياق الحي")</span><small>v4.3</small></div>
-                        <div class="architecture-flow">
-                            <article><span>01</span><div><strong>@T("Read allowed website content", "قراءة محتوى الموقع المسموح")</strong><small>@T("Visible routes, fields, tables, links, and controls", "المسارات والحقول والجداول والروابط والعناصر الظاهرة")</small></div><code>DOM</code></article>
-                            <article><span>02</span><div><strong>@T("Remove unsafe page identity", "تنقية هوية الصفحة")</strong><small>@T("Sessions, tracking values, and sensitive URL fields are sanitized", "تنظيف الجلسات وقيم التتبع وحقول الروابط الحساسة")</small></div><code>URL</code></article>
-                            <article><span>03</span><div><strong>@T("Build isolated site knowledge", "بناء معرفة معزولة للموقع")</strong><small>@T("SQLite metadata + Chroma semantic retrieval per workspace", "بيانات SQLite واسترجاع Chroma الدلالي لكل مساحة")</small></div><code>RAG</code></article>
-                            <article><span>04</span><div><strong>@T("Prioritize the current page", "إعطاء الأولوية للصفحة الحالية")</strong><small>@T("Fresh page context outranks an older indexed copy", "السياق الحي يتقدم على النسخة المفهرسة الأقدم")</small></div><code>LIVE</code></article>
-                            <article><span>05</span><div><strong>@T("Answer and navigate", "الإجابة والانتقال")</strong><small>@T("Grounded response, confidence, source title, and exact link", "إجابة موثقة ودرجة ثقة وعنوان مصدر ورابط دقيق")</small></div><code>@InlineArrow</code></article>
-                        </div>
-                    </div>
-
-                    <article class="security-card security-card-emphasis">
-                        <span class="card-label">@T("SECURITY BOUNDARY", "حدود الأمان")</span>
-                        <h3>@T("Useful context, without direct database access.", "سياق مفيد دون وصول مباشر لقاعدة البيانات.")</h3>
-                        <p>@T("The assistant works through the user's normal website session and processes only content that user can already reach. It does not ask for the website password or own the website's private database.", "يعمل المساعد عبر جلسة المستخدم العادية ويعالج فقط المحتوى الذي يستطيع المستخدم الوصول إليه أصلًا. لا يطلب كلمة مرور الموقع ولا يمتلك وصولًا إلى قاعدة بياناته الخاصة.")</p>
-                        <ul>
-                            <li>@T("No direct website database connection", "لا اتصال مباشر بقاعدة بيانات الموقع")</li>
-                            <li>@T("No collection of website credentials", "لا جمع لبيانات تسجيل الدخول")</li>
-                            <li>@T("Per-site and per-user workspace isolation", "عزل مساحة كل موقع وكل مستخدم")</li>
-                            <li>@T("Sanitized URLs and read-only discovery behavior", "روابط منقحة واستكشاف للقراءة فقط")</li>
-                        </ul>
-                        <div class="security-note"><strong>@T("Why this matters", "لماذا هذا مهم؟")</strong><span>@T("The integration can add real value while respecting the website's existing permissions and security model.", "يضيف الدمج قيمة حقيقية مع احترام صلاحيات الموقع ونموذج الأمان الموجود فيه.")</span></div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="work-section section-block" id="work" aria-labelledby="work-title">
-            <div class="page-shell">
-                <header class="section-heading">
-                    <div>
-                        <p class="section-index">@T("02 / LIVE PRODUCTS", "02 / منتجات حية")</p>
-                        <h2 id="work-title">@T("Products I designed,", "منتجات صممتها")<br /><em>@T("built, and shipped.", "وطورتها ونشرتها.")</em></h2>
-                    </div>
-                    <p>@T("Each project is shown as a case study: the problem, the real interface, the architecture, my role, and the engineering decisions behind the result.", "كل مشروع معروض كدراسة حالة: المشكلة والواجهة الحقيقية والمعمارية ودوري والقرارات الهندسية التي صنعت النتيجة.")</p>
-                </header>
-
-                <div class="project-list">
-                    @{ var projectNumber = 0; }
-                    @foreach (var project in productProjects)
-                    {
-                        projectNumber++;
-                        <article class="project-feature @(projectNumber % 2 == 0 ? "project-feature-reverse" : string.Empty)">
-                            <div class="project-visual">
-                                <ProjectVisual Slug="@project.Slug" ImagePath="@project.MediaPath" AltText="@project.MediaAlt" Culture="@Culture" />
-                            </div>
-                            <div class="project-copy">
-                                <div class="project-meta"><span>@projectNumber.ToString("00")</span><span>@project.Category</span><span>@project.CompletedYear</span></div>
-                                <h3>@project.Title</h3>
-                                <p>@project.Summary</p>
-                                <div class="tech-list" aria-label="@T("Technologies used", "التقنيات المستخدمة")">
-                                    @foreach (var technology in project.Technologies.Take(8))
-                                    {
-                                        <span>@technology</span>
-                                    }
-                                </div>
-                                <div class="project-actions">
-                                    <a class="text-link primary-link" href="@LocalUrl($"/work/{project.Slug}")">@T("Read case study", "اقرأ دراسة الحالة") <span aria-hidden="true">@InlineArrow</span></a>
-                                    @if (!string.IsNullOrWhiteSpace(project.PreviewUrl))
-                                    {
-                                        <a class="text-link" href="@project.PreviewUrl" target="_blank" rel="noreferrer">@T("Open live product", "فتح المنتج الحي") <span aria-hidden="true">↗</span></a>
-                                    }
-                                    @if (!string.IsNullOrWhiteSpace(project.RepositoryUrl))
-                                    {
-                                        <a class="text-link" href="@project.RepositoryUrl" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-                                    }
-                                </div>
-                            </div>
-                        </article>
-                    }
-                </div>
-            </div>
-        </section>
-
-        @if (labProjects.Count > 0)
+            <ol class="v2-flow" aria-label="@T("Application intelligence architecture", "هندسة ذكاء التطبيقات")">
+                <li>@T("Observe authorized interfaces", "رصد الواجهات المصرح بها")</li>
+                <li>@T("Learn pages, routes and goals", "تعلم الصفحات والمسارات والأهداف")</li>
+                <li>@T("Retrieve approved evidence", "استرجاع الأدلة المعتمدة")</li>
+                <li>@T("Give verified guidance", "تقديم إرشاد متحقق")</li>
+            </ol>
+        </div>
+    </section>
+    <section class="page-shell v2-section" id="work">
+        <h2>@T("Selected work", "أعمال مختارة")</h2>
+        @foreach (var study in Editorial.Work.Skip(1))
         {
-            <section class="lab-section section-block" aria-labelledby="lab-title">
-                <div class="page-shell">
-                    <header class="section-heading small-heading">
-                        <div><p class="section-index">@T("03 / ENGINEERING LAB", "03 / المختبر الهندسي")</p><h2 id="lab-title">@T("Focused tools and experiments.", "أدوات وتجارب مركزة.")</h2></div>
-                        <p>@T("Smaller builds that explore a specific automation problem without diluting the flagship product story.", "مشاريع أصغر تستكشف مشكلة أتمتة محددة وتضيف عمقًا تقنيًا دون تشتيت قصة المنتجات الأساسية.")</p>
-                    </header>
-                    @foreach (var project in labProjects)
-                    {
-                        <article class="lab-card">
-                            <div><span>@project.Category</span><h3>@project.Title</h3><p>@project.Summary</p></div>
-                            <div class="lab-card__meta">
-                                <div class="tech-list">@foreach (var technology in project.Technologies.Take(6)) { <span>@technology</span> }</div>
-                                <a class="text-link primary-link" href="@LocalUrl($"/work/{project.Slug}")">@T("View project", "عرض المشروع") <span aria-hidden="true">@InlineArrow</span></a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            </section>
+            <a class="v2-work-row" href="@Url(study.Path)">
+                <strong>@study.Title</strong><span>@study.Summary.In(Culture)</span><b aria-hidden="true">↗</b>
+            </a>
         }
-
-        <section class="about-section section-block" id="about" aria-labelledby="about-title">
-            <div class="page-shell">
-                <div class="about-grid">
-                    <div class="about-intro">
-                        <p class="section-index">@T("04 / PROFILE", "04 / الملف المهني")</p>
-                        <h2 id="about-title">@T("Backend depth.", "عمق في الـ Backend.")<br />@T("Product thinking.", "تفكير بالمنتج.")<br /><em>@T("Practical AI.", "ذكاء عملي.")</em></h2>
-                        <p>@T("I work across the full delivery path: architecture, data modeling, secure workflows, interface implementation, testing, deployment, and the product decisions that connect them.", "أعمل عبر دورة التسليم كاملة: المعمارية ونمذجة البيانات والمسارات الآمنة وتنفيذ الواجهات والاختبار والنشر والقرارات التي تربط كل ذلك بمنتج واضح.")</p>
-                        <a class="button button-secondary" href="/files/Abdalrahman_Talat_Abu_Salem_CV.pdf" target="_blank" rel="noreferrer">@T("Read the full CV", "قراءة السيرة الذاتية كاملة") <span aria-hidden="true">↗</span></a>
-                    </div>
-                    <div class="profile-file">
-                        <div class="panel-tabbar"><span class="is-active">@T("PROFILE OVERVIEW", "نظرة مهنية")</span><small>2026</small></div>
-                        <dl>
-                            <div><dt>@T("Education", "التعليم")</dt><dd><strong>@T("B.IT · Mobile Computing & Smart Devices", "بكالوريوس تكنولوجيا المعلومات · الحوسبة المتنقلة والأجهزة الذكية")</strong><span>@T("Islamic University of Gaza · Expected September 2026", "الجامعة الإسلامية بغزة · متوقع سبتمبر 2026")</span></dd></div>
-                            <div><dt>@T("Leadership", "القيادة")</dt><dd><strong>@T("Technology Club Operations Manager", "مدير عمليات نادي التكنولوجيا")</strong><span>@T("Operations, workshops, initiatives, and partnerships · 2022–2026", "إدارة العمليات والورش والمبادرات والشراكات · 2022–2026")</span></dd></div>
-                            <div><dt>@T("Additional experience", "خبرة إضافية")</dt><dd><strong>@T("Translator & Subtitle Specialist · Oxfam", "مترجم ومتخصص ترجمة مرئية · أوكسفام")</strong><span>@T("English–Arabic multimedia localization and quality review · 2024–Present", "تعريب وسائط ومراجعة جودة عربي–إنجليزي · 2024–الآن")</span></dd></div>
-                            <div><dt>@T("Focused training", "تدريب متخصص")</dt><dd><strong>@T("ASP.NET Core · Cyber Security · Artificial Intelligence", "ASP.NET Core · الأمن السيبراني · الذكاء الاصطناعي")</strong><span>@T("Areisto · 90h, Luminus Technical University College · 334h, and Taqat × Code Map · 2026", "Areisto · 90 ساعة، وكلية لومينوس الجامعية التقنية · 334 ساعة، وطاقات × Code Map · 2026")</span></dd></div>
-                        </dl>
-                    </div>
-                </div>
-
-                <div class="journey-block" aria-labelledby="journey-title">
-                    <header class="journey-heading">
-                        <div>
-                            <p class="section-index">@T("04.1 / EXPERIENCE", "04.1 / الخبرات")</p>
-                            <h3 id="journey-title">@T("Professional journey", "المسيرة المهنية")</h3>
-                        </div>
-                        <p>@T("A concise timeline of the product work, leadership, international experience, and education behind the systems shown above.", "خط زمني مختصر للعمل على المنتجات والخبرة القيادية والدولية والتعليم الذي يقف خلف الأنظمة المعروضة.")</p>
-                    </header>
-
-                    <ol class="journey-timeline">
-                        <li>
-                            <span class="journey-node" aria-hidden="true"></span>
-                            <article>
-                                <header><div><h4>@T("Independent Product Engineering", "تطوير منتجات مستقلة")</h4><span>@T("Full-Stack & Applied AI", "تطوير متكامل وذكاء تطبيقي")</span></div><time>@T("2024–Present", "2024–الآن")</time></header>
-                                <p>@T("Designed and shipped real .NET and Python products, including a multi-role aid operations platform, reusable site-aware AI integrations, and academic document-analysis tools.", "صممت ونشرت منتجات فعلية بـ .NET وPython، منها منصة عمليات مساعدات متعددة الأدوار، ونظام ذكاء مدرك للموقع قابل لإعادة الاستخدام، وأدوات لتحليل المستندات الأكاديمية.")</p>
-                                <div class="journey-tags" aria-label="@T("Related skills", "المهارات المرتبطة")"><span>ASP.NET Core</span><span>Blazor</span><span>FastAPI</span><span>Applied AI</span><span>Docker</span></div>
-                            </article>
-                        </li>
-                        <li>
-                            <span class="journey-node" aria-hidden="true"></span>
-                            <article>
-                                <header><div><h4>@T("Translator & Subtitle Specialist", "مترجم ومتخصص ترجمة مرئية")</h4><span>@T("Oxfam", "أوكسفام")</span></div><time>@T("2024–Present", "2024–الآن")</time></header>
-                                <p>@T("Delivered English–Arabic multimedia localization and quality review with careful attention to terminology, context, and deadlines.", "نفذت تعريبًا للوسائط ومراجعة جودة بين العربية والإنجليزية مع اهتمام دقيق بالمصطلحات والسياق والمواعيد.")</p>
-                                <div class="journey-tags" aria-label="@T("Related skills", "المهارات المرتبطة")"><span>Localization</span><span>Quality Review</span><span>Arabic / English</span></div>
-                            </article>
-                        </li>
-                        <li>
-                            <span class="journey-node" aria-hidden="true"></span>
-                            <article>
-                                <header><div><h4>@T("Operations Manager", "مدير العمليات")</h4><span>@T("Technology Club", "نادي التكنولوجيا")</span></div><time>2022–2026</time></header>
-                                <p>@T("Coordinated tasks, workshops, technical initiatives, and team operations—building the execution discipline used across product delivery.", "نسقت المهام والورش والمبادرات التقنية وعمليات الفريق، وطورت انضباط التنفيذ الذي أطبقه في تسليم المنتجات.")</p>
-                                <div class="journey-tags" aria-label="@T("Related skills", "المهارات المرتبطة")"><span>Operations</span><span>Project Coordination</span><span>Team Leadership</span></div>
-                            </article>
-                        </li>
-                        <li>
-                            <span class="journey-node" aria-hidden="true"></span>
-                            <article>
-                                <header><div><h4>@T("B.IT in Mobile Computing & Smart Devices", "بكالوريوس الحوسبة المتنقلة والأجهزة الذكية")</h4><span>@T("Islamic University of Gaza", "الجامعة الإسلامية بغزة")</span></div><time>@T("Expected Sep 2026", "متوقع سبتمبر 2026")</time></header>
-                                <p>@T("Academic foundation in software engineering, mobile development, databases, algorithms, and connected systems, supported by focused training in ASP.NET Core, cyber security, and AI.", "أساس أكاديمي في هندسة البرمجيات وتطوير الموبايل وقواعد البيانات والخوارزميات والأنظمة المتصلة، مدعوم بتدريب متخصص في ASP.NET Core والأمن السيبراني والذكاء الاصطناعي.")</p>
-                                <div class="journey-tags" aria-label="@T("Related skills", "المهارات المرتبطة")"><span>C#</span><span>Databases</span><span>Mobile Development</span><span>AI Training</span></div>
-                            </article>
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </section>
-
-        <section class="contact-section section-block" id="contact" aria-labelledby="contact-title">
-            <div class="page-shell contact-panel contact-panel-centered">
-                <div class="contact-intro">
-                    <p class="section-index">@T("05 / CONNECT", "05 / تواصل")</p>
-                    <h2 id="contact-title">@T("Let's build something", "لنبنِ شيئًا")<br /><em>@T("useful.", "مفيدًا.")</em></h2>
-                    <p>@T("Open to backend, full-stack, and practical AI integration work. Start with the channel that suits you.", "متاح لأعمال الـ Backend والتطوير المتكامل ودمج الذكاء الاصطناعي عمليًا. تواصل معي بالطريقة الأنسب لك.")</p>
-                    <a class="contact-email" href="mailto:aboodtalat123@gmail.com">aboodtalat123@gmail.com <span aria-hidden="true">↗</span></a>
-                </div>
-
-                <nav class="connect-links connect-links-five" aria-label="@T("Contact and profile links", "روابط التواصل والحسابات")">
-                    <a href="https://github.com/aboodtalat123" target="_blank" rel="noreferrer">
-                        <span class="connect-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.4 3.5 6.5 6.8 7A4.8 4.8 0 0 0 8 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></span>
-                        <strong>GitHub</strong><small>@T("Source and repositories", "المصادر والمستودعات")</small>
-                    </a>
-                    <a href="https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/" target="_blank" rel="noreferrer">
-                        <span class="connect-icon connect-icon-linkedin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></span>
-                        <strong>LinkedIn</strong><small>@T("Professional profile", "الملف المهني")</small>
-                    </a>
-                    <a href="#work">
-                        <span class="connect-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></span>
-                        <strong>@T("Selected work", "أعمال مختارة")</strong><small>@T("Product case studies", "دراسات حالة المنتجات")</small>
-                    </a>
-                    <a href="/files/Abdalrahman_Talat_Abu_Salem_CV.pdf" target="_blank" rel="noreferrer">
-                        <span class="connect-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" x2="16" y1="13" y2="13"/><line x1="8" x2="16" y1="17" y2="17"/></svg></span>
-                        <strong>@T("Resume", "السيرة الذاتية")</strong><small>@T("Open the current CV", "فتح النسخة الحالية")</small>
-                    </a>
-                    <a href="mailto:aboodtalat123@gmail.com">
-                        <span class="connect-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
-                        <strong>@T("Email", "البريد")</strong><small>@T("Start a conversation", "ابدأ محادثة")</small>
-                    </a>
-                </nav>
-            </div>
-        </section>
-    </main>
-
-    <PortfolioFooter Culture="@Culture" />
-</div>
+    </section>
+    <section class="page-shell v2-section v2-split" id="about">
+        <h2>@T("Engineering practice", "الممارسة الهندسية")</h2>
+        <div>
+            <p class="v2-lead">@T("Independent software development and applied AI engineering across product architecture, APIs, contextual interfaces and automated verification.", "تطوير برمجيات مستقل وهندسة ذكاء اصطناعي تطبيقي تشمل معمارية المنتجات وواجهات البرمجة والتجارب السياقية والتحقق الآلي.")</p>
+            <p>Python · FastAPI · C# · ASP.NET Core · TypeScript · PostgreSQL · Playwright</p>
+        </div>
+    </section>
+    <section class="page-shell v2-section v2-split" id="lab">
+        <h2>@T("Engineering lab", "المختبر الهندسي")</h2>
+        <div>@foreach(var item in Editorial.Lab)
+        {
+            @if (item.Url is { } target)
+            {
+                <a class="v2-lab-item" href="@Url(target)"><strong>@item.Title ↗</strong><span>@item.Description.In(Culture)</span></a>
+            }
+            else
+            {
+                <div class="v2-lab-item"><strong>@item.Title</strong><span>@item.Description.In(Culture)</span></div>
+            }
+        }</div>
+    </section>
+    <section class="page-shell v2-section v2-split" id="contact">
+        <h2>@T("Get in touch", "لنتواصل")</h2>
+        <div class="project-actions"><a class="button button-primary" href="mailto:aboodtalat123@gmail.com">@T("Email me", "راسلني")</a><a class="button button-secondary" href="https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/">LinkedIn ↗</a></div>
+    </section>
+</main>
+<PortfolioFooter Culture="@Culture" />
 
 @code {
-    [SupplyParameterFromQuery(Name = "lang")]
-    public string? Language { get; set; }
-
-    private IReadOnlyList<ProjectCard> productProjects = [];
-    private IReadOnlyList<ProjectCard> labProjects = [];
-    private string? loadedCulture;
-
+    [SupplyParameterFromQuery(Name = "lang")] public string? Language { get; set; }
     private string Culture => string.Equals(Language, "ar", StringComparison.OrdinalIgnoreCase) ? "ar" : "en";
-    private bool IsArabic => Culture == "ar";
-    private string InlineArrow => IsArabic ? "←" : "→";
-    private string PageTitleText => T("ABD ALRAHMAN TALAT ABUSALEM | .NET Backend & Applied AI Engineer", "عبد الرحمن أبو سالم | مهندس Backend .NET وذكاء اصطناعي تطبيقي");
-    private string MetaDescription => T(
-        "ABD ALRAHMAN TALAT ABUSALEM builds secure ASP.NET Core products and reusable AI knowledge layers that understand websites without direct database access.",
-        "عبد الرحمن أبو سالم يطوّر منتجات ASP.NET Core آمنة وطبقات ذكاء قابلة لإعادة الاستخدام تفهم المواقع دون وصول مباشر إلى قواعد بياناتها.");
-
-    private string MetaKeywords => T(
-        "ABD ALRAHMAN TALAT ABUSALEM, Abd Alrahman Talat Abu Salem, Abdalrahman Abu Salem, Abdalrahman Talat, aboodtalat, aboodtalat123, .NET backend developer, ASP.NET Core developer, Blazor developer, applied AI engineer, AI website assistant, Gaza developer, Palestinian software developer",
-        "عبد الرحمن طلعت أبو سالم, عبدالرحمن أبو سالم, عبود طلعت, aboodtalat, aboodtalat123, مطور .NET, مطور ASP.NET Core, مطور Blazor, مهندس ذكاء اصطناعي تطبيقي, مساعد ذكاء اصطناعي للمواقع, مطور من غزة, مطور فلسطيني");
-    private string SiteOrigin
-    {
-        get
-        {
-            var uri = new Uri(Navigation.Uri);
-            return $"{uri.Scheme}://{uri.Host}{(uri.IsDefaultPort ? string.Empty : $":{uri.Port}")}";
-        }
-    }
-    private string EnglishUrl => $"{SiteOrigin}/";
-    private string ArabicUrl => $"{SiteOrigin}/?lang=ar";
-    private string CanonicalUrl => IsArabic ? ArabicUrl : EnglishUrl;
-    private string JsonLd => System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
-    {
-        ["@context"] = "https://schema.org",
-        ["@type"] = "Person",
-        ["name"] = "ABD ALRAHMAN TALAT ABUSALEM",
-        ["alternateName"] = new[]
-        {
-            "aboodtalat",
-            "aboodtalat123",
-            "Abd Alrahman Talat",
-            "Abdalrahman Abu Salem",
-            "Abdalrahman Talat Abu Salem",
-            "عبد الرحمن طلعت أبو سالم",
-            "عبود طلعت"
-        },
-        ["url"] = EnglishUrl,
-        ["image"] = $"{SiteOrigin}/media/abdalrahman-profile.jpg",
-        ["jobTitle"] = ".NET Backend and Applied AI Engineer",
-        ["email"] = "mailto:aboodtalat123@gmail.com",
-        ["address"] = new Dictionary<string, string>
-        {
-            ["@type"] = "PostalAddress",
-            ["addressLocality"] = "Gaza",
-            ["addressCountry"] = "PS"
-        },
-        ["knowsAbout"] = new[]
-        {
-            "ASP.NET Core",
-            "Blazor",
-            "C#",
-            "Entity Framework Core",
-            "SQL Server",
-            "FastAPI",
-            "Applied AI",
-            "RAG",
-            "AI website assistants",
-            "Secure web systems"
-        },
-        ["sameAs"] = new[]
-        {
-            "https://github.com/aboodtalat123",
-            "https://www.linkedin.com/in/abd-alrahman-talat-abusalem-1115a23a7/"
-        },
-        ["mainEntityOfPage"] = CanonicalUrl
-    });
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (loadedCulture == Culture)
-        {
-            return;
-        }
-
-        loadedCulture = Culture;
-        var projects = await ProjectRepository.GetPublishedAsync(Culture);
-        productProjects = projects
-            .Where(project => project.IsFeatured && project.Slug != "reusable-site-ai")
-            .ToArray();
-        labProjects = projects.Where(project => !project.IsFeatured).ToArray();
-    }
-
-    private string T(string english, string arabic) => IsArabic ? arabic : english;
-
-    private string LocalUrl(string path)
-    {
-        if (!IsArabic)
-        {
-            return path;
-        }
-
-        var fragmentIndex = path.IndexOf('#');
-        var fragment = fragmentIndex >= 0 ? path[fragmentIndex..] : string.Empty;
-        var basePath = fragmentIndex >= 0 ? path[..fragmentIndex] : path;
-        var separator = basePath.Contains('?') ? '&' : '?';
-        return $"{basePath}{separator}lang=ar{fragment}";
-    }
+    private string T(string en, string ar) => Culture == "ar" ? ar : en;
+    private string Url(string path) => Culture == "ar" ? path + "?lang=ar" : path;
 }
