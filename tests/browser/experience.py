@@ -55,6 +55,12 @@ with sync_playwright() as p:
             expect(page.locator("#engineering")).to_be_visible()
             assert page.evaluate("document.documentElement.scrollWidth === innerWidth")
         assert page.goto(base + "/pitch" + locale).ok
+        with page.expect_download() as pitch_download:
+            page.locator('a[download][href^="/pitch/download"]').click()
+        assert pitch_download.value.suggested_filename.endswith("_AR.pdf" if locale else "_EN.pdf")
+        with fitz.open(pitch_download.value.path()) as pitch_doc:
+            assert len(pitch_doc) == 14
+            assert all(sheet.get_text().strip() for sheet in pitch_doc)
         page.locator('.v2-pitch-nav a[href$="#slide-5"]').click()
         assert page.url.endswith("#slide-5")
         expect(page.locator("#slide-5")).to_be_in_viewport()

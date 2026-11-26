@@ -42,6 +42,7 @@ public sealed partial class PortfolioKnowledgeService : IPortfolioKnowledgeServi
                 var termScore = Tokens(item.Content + " " + string.Join(' ', item.Keywords)).Count(words.Contains);
                 var titleScore = item.Url.StartsWith("/work/", StringComparison.Ordinal)
                     ? 0 : 2 * Tokens(item.Title).Count(words.Contains);
+                if (item.SourceId == "profile" && words.Overlaps(["cv", "resume", "السيره"])) titleScore += 6;
                 var sectionScore = (topic || contextual) && sections.Any(s => item.SourceId.EndsWith(s, StringComparison.Ordinal)) ? 5 : 0;
                 return (Item: item, Score: (topic ? 10 : contextual ? 5 : 0) + termScore + sectionScore + titleScore);
             })
@@ -78,10 +79,17 @@ public sealed partial class PortfolioKnowledgeService : IPortfolioKnowledgeServi
         {
             new("profile", ar ? "الملف المهني" : "Professional profile", "/cv" + query,
                 $"{Editorial.Identity.In(culture)} — {Editorial.Profession.In(culture)}. {Editorial.Bio.In(culture)}",
-                ["profile", "resume", "CV", "recruiter", "skills", "السيرة", "المهارات", "الخبرة"]),
+                ["profile", "resume", "CV", "السيرة"]),
+            new("profile-experience", ar ? "الخبرة المهنية" : "Professional experience", "/cv" + query + "#experience",
+                Editorial.Experience.In(culture), ["experience", "independent", "freelance", "الخبره", "خبره"]),
+            new("profile-skills", ar ? "المهارات التقنية" : "Technical skills", "/cv" + query + "#skills",
+                $"{Editorial.AppliedSkills.In(culture)} {Editorial.ApplicationSkills}. {Editorial.DataSkills}.",
+                ["skills", "recruiter", "job", "role", "المهارات", "مهارات", "وظيفه"]),
+            new("profile-education", ar ? "التعليم واللغات" : "Education and languages", "/cv" + query + "#education",
+                Editorial.Education.In(culture), ["education", "degree", "graduated", "languages", "التعليم", "تخرج", "اللغات"]),
             new("pitch", ar ? "عرض SiteAware" : "SiteAware pitch", "/pitch" + query,
-                ar ? "عرض الرؤية والمعمارية وأسس الوكلاء والسوق المقترح وخارطة الطريق." :
-                    "Presentation covering the product vision, architecture, agent foundations, proposed market and roadmap.",
+                ar ? $"المستخدمون المقترحون: {Editorial.PitchAudience.In(culture)} نموذج العمل المقترح: {Editorial.PitchBusiness.In(culture)} خارطة الطريق: {Editorial.PitchRoadmap.In(culture)}" :
+                    $"Proposed audiences: {Editorial.PitchAudience.In(culture)} Proposed business model: {Editorial.PitchBusiness.In(culture)} Roadmap: {Editorial.PitchRoadmap.In(culture)}",
                 ["pitch", "investor", "market", "عرض", "مستثمر"]),
             new("contact", ar ? "التواصل" : "Contact", "/" + query + "#contact",
                 ar ? "تتوفر روابط البريد ولينكدإن لمناقشة فرص التعاون." : "Use the public email and LinkedIn links to discuss collaboration.",

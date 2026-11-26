@@ -5,6 +5,9 @@
     <p class="v2-label">@T("Product presentation", "عرض المنتج")</p>
     <h1>SiteAware AI</h1>
     <p class="v2-lead">@Editorial.Work[0].Summary.In(Culture)</p>
+    <div class="project-actions">
+        <a class="button button-secondary" href="@(Culture == "ar" ? "/pitch/download?lang=ar" : "/pitch/download")" download data-enhance-nav="false">@T("Download pitch · PDF", "تنزيل العرض · PDF")</a>
+    </div>
     <nav class="v2-pitch-nav" aria-label="@T("Slides", "الشرائح")">
         @for (var i = 0; i < Slides.Length; i++)
         {
@@ -46,9 +49,9 @@
         (new("Agent foundations", "أسس الوكلاء"), Editorial.Work[0].Status),
         (new("Reliability", "الموثوقية"), new("Scoped knowledge access, bounded provider use and evidence-linked navigation support review and controlled operation.", "تدعم حدود الوصول للمعرفة وضبط استخدام المزود وربط التنقل بالأدلة المراجعة والتشغيل المضبوط.")),
         (new("Validation", "التحقق"), new("Engineering evaluation covers browser workflows, source retrieval and unsupported requests. Integrated releases and document answer quality remain under evaluation.", "يشمل التقييم الهندسي تدفقات المتصفح واسترجاع المصادر والطلبات غير المدعومة. ما زال الإصدار المتكامل وجودة الإجابات المستندية قيد التقييم.")),
-        (new("Proposed users", "المستخدمون المقترحون"), new("Enterprise software, SaaS, education and public-service application teams.", "فرق برمجيات المؤسسات والمنصات السحابية والتعليم والخدمات العامة.")),
-        (new("Proposed business model", "نموذج العمل المقترح"), new("Business subscriptions and integration services.", "اشتراكات للشركات وخدمات تكامل.")),
-        (new("Roadmap", "خارطة الطريق"), new("Complete integrated validation, improve document answer quality, validate controlled pilots and evaluate governed execution.", "إكمال التحقق المتكامل وتحسين جودة الإجابات المستندية والتحقق من تجارب مضبوطة وتقييم التنفيذ المحكوم.")),
+        (new("Proposed users", "المستخدمون المقترحون"), Editorial.PitchAudience),
+        (new("Proposed business model", "نموذج العمل المقترح"), Editorial.PitchBusiness),
+        (new("Roadmap", "خارطة الطريق"), Editorial.PitchRoadmap),
         (new("Founder & collaboration", "المؤسس والتعاون"), new("Abd Alrahman Talat Abu Salem, Founder & Applied AI Engineer. Seeking technical and design partners for application intelligence.", "عبد الرحمن طلعت أبو سالم، المؤسس ومهندس الذكاء الاصطناعي التطبيقي. أبحث عن شركاء تقنيين وشركاء تصميم في ذكاء التطبيقات."))
     ];
 }

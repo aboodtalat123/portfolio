@@ -42,6 +42,9 @@ public sealed class EditorialAssistantTests
     [InlineData("كيف أتواصل؟", "ar", "contact")]
     [InlineData("engineering lab", "en", "lab")]
     [InlineData("investor pitch", "en", "pitch")]
+    [InlineData("What are his technical skills?", "en", "profile-skills")]
+    [InlineData("Did he graduate? What is his education?", "en", "profile-education")]
+    [InlineData("ما مهاراته التقنية؟", "ar", "profile-skills")]
     public async Task ReferenceMode_ReturnsExpectedCanonicalSource(string question, string language, string sourceId)
     {
         using var handler = new ReplyHandler(_ => throw new InvalidOperationException("Unexpected provider call."));

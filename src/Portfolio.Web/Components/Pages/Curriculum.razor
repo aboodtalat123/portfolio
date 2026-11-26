@@ -10,16 +10,16 @@
         <a class="button button-primary" href="/cv/download" download data-enhance-nav="false">@T("Download CV · PDF (English)", "تنزيل السيرة · PDF بالإنجليزية")</a>
         <a class="button button-secondary" href="/files/Abdalrahman_Talat_Abu_Salem_CV.pdf" data-enhance-nav="false">@T("Open PDF", "افتح ملف PDF")</a>
     </div>
-    <section class="v2-section v2-split"><h2>@T("Experience", "الخبرة")</h2><div><h3>@T("Independent software development and applied AI", "تطوير برمجيات مستقل وذكاء اصطناعي تطبيقي")</h3><p>@T("Full-stack product work spanning architecture, APIs, contextual interfaces and verification.", "تطوير منتجات متكاملة يشمل المعمارية وواجهات البرمجة والتجارب السياقية والتحقق.")</p></div></section>
+    <section class="v2-section v2-split" id="experience"><h2>@T("Experience", "الخبرة")</h2><p>@Editorial.Experience.In(Culture)</p></section>
     <section class="v2-section v2-split" id="skills">
         <h2>@T("Technical skills", "المهارات التقنية")</h2>
         <dl class="v2-skills">
             <dt>@T("Applied AI", "الذكاء الاصطناعي التطبيقي")</dt>
-            <dd>@T("LLM integration, hybrid retrieval, multimodal document processing, OCR and grounding evaluation.", "تكامل النماذج اللغوية والاسترجاع الهجين ومعالجة الوثائق متعددة الوسائط والتعرف الضوئي وتقييم الاستناد إلى الأدلة.")</dd>
+            <dd>@Editorial.AppliedSkills.In(Culture)</dd>
             <dt>@T("Application engineering", "هندسة التطبيقات")</dt>
-            <dd dir="ltr">Python · FastAPI · C# · ASP.NET Core · React · TypeScript · Blazor · PWA</dd>
+            <dd dir="ltr">@Editorial.ApplicationSkills</dd>
             <dt>@T("Data and delivery", "البيانات والتسليم")</dt>
-            <dd dir="ltr">PostgreSQL · pgvector · EF Core · SQLite · IndexedDB · Playwright · Docker</dd>
+            <dd dir="ltr">@Editorial.DataSkills</dd>
         </dl>
     </section>
     <section class="v2-section"><h2>@T("Selected projects", "مشاريع مختارة")</h2>
@@ -28,7 +28,7 @@
             <article class="v2-cv-item"><h3><a href="@(Culture == "ar" ? item.Path + "?lang=ar" : item.Path)">@item.Title</a></h3><p class="v2-role">@item.Role.In(Culture)</p><p>@item.Engineering.In(Culture)</p></article>
         }
     </section>
-    <section class="v2-section v2-split"><h2>@T("Education & languages", "التعليم واللغات")</h2><p>@T("Bachelor of Information Technology, Mobile Computing & Smart Device Applications, Islamic University of Gaza (in progress). Arabic native, English intermediate.", "بكالوريوس تكنولوجيا المعلومات، الحوسبة المتنقلة وتطبيقات الأجهزة الذكية، الجامعة الإسلامية بغزة (قيد الدراسة). العربية اللغة الأم والإنجليزية مستوى متوسط.")</p></section>
+    <section class="v2-section v2-split" id="education"><h2>@T("Education & languages", "التعليم واللغات")</h2><p>@Editorial.Education.In(Culture)</p></section>
 </main>
 <PortfolioFooter Culture="@Culture" />
 @code {

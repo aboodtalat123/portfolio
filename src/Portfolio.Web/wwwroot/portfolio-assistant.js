@@ -331,7 +331,7 @@
                 try {
                     const target = new URL(source.url, window.location.origin);
                     const paths = new Set(["/", "/cv", "/pitch", "/work/siteaware-ai", "/work/tebiha", "/work/dr-solution", "/work/level-up-pos", "/work/wesal-mabrouk", "/work/fairaid-gaza"]);
-                    const anchors = new Set(["", "#work", "#contact", "#lab", "#challenge", "#engineering", "#status", "#stack"]);
+                    const anchors = new Set(["", "#work", "#contact", "#lab", "#challenge", "#engineering", "#status", "#stack", "#skills", "#experience", "#education"]);
                     return target.origin === window.location.origin && paths.has(target.pathname) &&
                         anchors.has(target.hash) && ["", "?lang=ar"].includes(target.search);
                 } catch {

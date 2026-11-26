@@ -20,6 +20,27 @@ public static class Editorial
     public static readonly LocalText Bio = new(
         "I build software that understands the systems people work in. My work connects grounded AI, reliable data workflows and full-stack product engineering.",
         "أبني برمجيات تفهم الأنظمة التي يعمل فيها الناس، وأجمع بين الذكاء الاصطناعي المدعوم بالأدلة وتدفقات البيانات الموثوقة وهندسة المنتجات المتكاملة.");
+    public static readonly LocalText Experience = new(
+        "Independent software development and applied AI engineering across product architecture, APIs, contextual interfaces and automated verification.",
+        "تطوير برمجيات مستقل وهندسة ذكاء اصطناعي تطبيقي تشمل معمارية المنتجات وواجهات البرمجة والتجارب السياقية والتحقق الآلي.");
+    public static readonly LocalText Education = new(
+        "Bachelor of Information Technology, Mobile Computing & Smart Device Applications, Islamic University of Gaza (in progress). Arabic native, English intermediate.",
+        "بكالوريوس تكنولوجيا المعلومات، الحوسبة المتنقلة وتطبيقات الأجهزة الذكية، الجامعة الإسلامية بغزة (قيد الدراسة). العربية اللغة الأم والإنجليزية مستوى متوسط.");
+    public static readonly LocalText AppliedSkills = new(
+        "LLM integration, hybrid retrieval, multimodal document processing, OCR and grounding evaluation.",
+        "تكامل النماذج اللغوية والاسترجاع الهجين ومعالجة الوثائق متعددة الوسائط والتعرف الضوئي وتقييم الاستناد إلى الأدلة.");
+    public const string ApplicationSkills = "Python · FastAPI · C# · ASP.NET Core · React · TypeScript · Blazor · PWA";
+    public const string DataSkills = "PostgreSQL · pgvector · EF Core · SQLite · IndexedDB · Playwright · Docker";
+
+    public static readonly LocalText PitchAudience = new(
+        "Enterprise software, SaaS, education and public-service application teams.",
+        "فرق برمجيات المؤسسات والمنصات السحابية والتعليم والخدمات العامة.");
+    public static readonly LocalText PitchBusiness = new(
+        "Business subscriptions and integration services.",
+        "اشتراكات للشركات وخدمات تكامل.");
+    public static readonly LocalText PitchRoadmap = new(
+        "Complete integrated validation, improve document answer quality, validate controlled pilots and evaluate governed execution.",
+        "إكمال التحقق المتكامل وتحسين جودة الإجابات المستندية والتحقق من تجارب مضبوطة وتقييم التنفيذ المحكوم.");
 
     public static IReadOnlyList<WorkStudy> Work { get; } =
     [

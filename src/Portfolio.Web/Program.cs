@@ -94,6 +94,13 @@ app.MapGet("/cv/download", (IWebHostEnvironment environment) =>
     return Results.File(Path.Combine(environment.WebRootPath, "files", "Abdalrahman_Talat_Abu_Salem_CV.pdf"),
         "application/pdf", fileDownloadName: "Abd_Alrahman_Talat_Abu_Salem_Technical_CV.pdf", enableRangeProcessing: true);
 });
+app.MapGet("/pitch/download", (string? lang, IWebHostEnvironment environment) =>
+{
+    var fileName = string.Equals(lang, "ar", StringComparison.OrdinalIgnoreCase)
+        ? "SiteAware_AI_Pitch_AR.pdf" : "SiteAware_AI_Pitch_EN.pdf";
+    return Results.File(Path.Combine(environment.WebRootPath, "files", fileName),
+        "application/pdf", fileDownloadName: fileName, enableRangeProcessing: true);
+});
 
 app.MapGet("/api/health", (IOptions<PortfolioAssistantOptions> assistantOptions) => Results.Ok(new
 {

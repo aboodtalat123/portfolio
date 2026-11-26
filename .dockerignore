@@ -4,6 +4,8 @@
 **/bin
 **/obj
 **/tmp
+**/App_Data
+**/.env*
 tests
 *.user
 *.suo
